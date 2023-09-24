@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"awesomeProject/internal/api"
+	"log"
+)
 
 func main() {
-	fmt.Println("Hello, 世界")
+	log.Println("Application startup")
+	api.StartServer()
+	log.Println("Application shutdown")
 }
