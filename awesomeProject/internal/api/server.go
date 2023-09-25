@@ -7,8 +7,34 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ForecastType struct {
+	Image   string
+	Header  string
+	Details string
+	More    string
+}
+
 func StartServer() {
 	log.Println("Server start up")
+	data := [3]ForecastType{
+		{
+			"term.svg",
+			"Прогноз температуры",
+			"Точность ±50℃",
+			"Наши термометры самые точные в мире!!!! Купи прогноз, не пожалеешь!",
+		}, {
+			"term.svg",
+			"Прогноз давления",
+			"Точность ±42кПа",
+			"Наши манометры самые точные в мире!!!! Купи прогноз, не пожалеешь!",
+		}, {
+			"term.svg",
+			"Прогноз влажности",
+			"Точность ±66%",
+			"Наши термометры самые точные в мире!!!! Купи прогноз, не пожалеешь!",
+		},
+	}
+	log.Println(data)
 
 	r := gin.Default()
 
@@ -18,17 +44,24 @@ func StartServer() {
 		})
 	})
 
-	r.LoadHTMLGlob("../../templates/*")
+	r.LoadHTMLGlob("templates/*")
 
-	r.GET("/home", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "base.layout.tmpl", gin.H{
-			"title": "Main website",
+	r.GET("/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"choose": true,
 		})
 	})
 
-	r.Static("/image", "../../resources")
+	r.GET("/more", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"choose": false,
+		})
+	})
 
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Static("/image", "resources")
+	r.Static("/styles", "styles")
+
+	r.Run()
 
 	log.Println("Server down")
 }
