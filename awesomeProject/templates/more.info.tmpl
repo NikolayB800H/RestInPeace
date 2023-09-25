@@ -1,17 +1,19 @@
 {{ define "more.info.tmpl" }}
 
-<h2>Это подробно!</h2>
+<h2>Подробнее о прогнозе</h2>
 
 <div class="card-container">
 
-    <div class="imgBox">
-        <img src="image/term.svg" alt="Услуга" class="image-v">
+    <div class="card-container" style="background: rgb(236, 240, 241);">
+    <div class="contentBox" style="width: 1335px;">
+        <div class="imgBox">
+            <img src="../image/{{ .id.Image }}" alt="Услуга" class="image-v">
+        </div>
+        <h2>{{ .id.Header }}</h2>
+        <h2>{{ .id.Details }}</h2>
+        <p>{{ .id.More }}</p>
+        <a href="/?index=">Назад</a>
     </div>
-
-    <div class="contentBox">
-        <h3>Прогноз температуры</h3>
-        <h2 class="price">Точность ±50℃</h2>
-        <a href="/index" class="buy">Назад</a>
     </div>
 
 </div>
