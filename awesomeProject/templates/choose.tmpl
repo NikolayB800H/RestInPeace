@@ -1,10 +1,22 @@
 {{ define "choose.tmpl" }}
 
 <h2>Выбирайте прогноз!</h2>
-<form action="/" method="get">
-    <input type="text" name="index" value="" placeholder="Название прогноза">
-    <button class="buy">Найти</button>
-</form>
+<div id="cover">
+  <form method="get" action="/">
+    <div class="tb">
+      <div class="td">
+      <input type="text" name="index" value="{{ .value }}" placeholder="Название прогноза">
+      </div>
+      <div class="td" id="s-cover">
+        <button class="search" type="submit">
+          <div id="s-circle"></div>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
 <div class="card-container">
 
     {{ range .data }}
