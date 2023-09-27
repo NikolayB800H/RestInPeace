@@ -10,12 +10,12 @@ import (
 )
 
 type ForecastType struct {
-	Image   string
-	Header  string
-	Details string
-	More    string
-	Id      string
-	Unit    string
+	Image        string
+	ForecastType string
+	Details      string
+	More         string
+	Id           string
+	Unit         string
 }
 
 func StartServer() {
@@ -68,7 +68,7 @@ func StartServer() {
 		log.Println("index", value)
 		var forecasts []ForecastType
 		for i := 0; i < len(data); i++ {
-			if strings.Contains(strings.ToLower(data[i].Header), strings.ToLower(value)) {
+			if strings.Contains(strings.ToLower(data[i].ForecastType), strings.ToLower(value)) {
 				forecasts = append(forecasts, data[i])
 			}
 		}
