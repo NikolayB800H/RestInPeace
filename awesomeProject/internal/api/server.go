@@ -64,8 +64,8 @@ func StartServer() {
 	})
 
 	r.GET("/", func(c *gin.Context) {
-		value := c.Query("index")
-		log.Println("index", value)
+		value := c.Query("forecast")
+		log.Println("forecast", value)
 		var forecasts []ForecastType
 		for i := 0; i < len(data); i++ {
 			if strings.Contains(strings.ToLower(data[i].ForecastType), strings.ToLower(value)) {
