@@ -20,9 +20,7 @@
 <div class="card-container">
 
     {{ range .data }}
-        {{if eq .DataTypeStatus "valid"}}
-          {{ template "card.tmpl" .}}
-        {{ end }}
+      {{ template "card.tmpl" .}}
     {{ end }}
 
 </div>

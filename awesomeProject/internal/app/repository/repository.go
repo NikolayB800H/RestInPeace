@@ -50,7 +50,7 @@ func (r *Repository) GetDataTypeByName(DataTypeName string) ([]ds.DataTypes, err
 	var dataTypes []ds.DataTypes
 
 	err := r.db.
-		Where("LOWER(data_types.data_type_name) LIKE ?", "%"+strings.ToLower(DataTypeName)+"%").
+		Where("LOWER(data_types.data_type_name) LIKE ? AND data_types.data_type_status = 'valid'", "%"+strings.ToLower(DataTypeName)+"%").
 		Find(&dataTypes).Error
 
 	if err != nil {
