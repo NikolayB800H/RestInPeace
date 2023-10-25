@@ -1,3 +1,13 @@
+.status {
+  background-color: red;
+  color: white;
+  width: 100%;
+  height: 200%;
+  border-radius: 20px;
+  position: relative;
+  text-align: center;
+  margin-top: 20;
+}
 
 .card-container {
   box-sizing: border-box;
@@ -16,9 +26,8 @@
 .card {
   box-sizing: border-box;
   position: relative;
-  position: relative;
   width: 320px;
-  height: 580px;
+  height: 560px;
   background: #191919;
   border-radius: 20px;
   overflow: hidden;
@@ -87,6 +96,7 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 0px;
+  margin-top: 0px;
 }
 
 .card .contentBox .price {
@@ -101,7 +111,7 @@
 .card .contentBox .buy {
   box-sizing: border-box;
   position: relative;
-  top: 100px;
+  top: 12px; /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
   opacity: 0;
   padding: 10px 30px;
   margin-top: 15px;
@@ -215,6 +225,7 @@ h2{
     font-weight: 900;
     padding: 0 0 15px 0;
     text-align: center;
+    margin-bottom: -30px;
 }
 p{
     font-size: 1.25em;

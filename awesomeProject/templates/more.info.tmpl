@@ -7,11 +7,11 @@
     <div class="card-container" style="background: rgb(236, 240, 241);">
     <div class="contentBox" style="width: 1335px;">
         <div class="imgBox">
-            <img src="../image/{{ .id.Image }}" alt="Услуга" class="image-v">
+            <img src="../image/{{ .id.ImagePath }}" alt="Услуга" class="image-v">
         </div>
-        <h2>{{ .id.ForecastType }} (в {{ .id.Unit }})</h2>
-        <h2>{{ .id.Details }} {{ .id.Unit }}</h2>
-        <p>{{ .id.More }}</p>
+        <h2>{{ .id.DataTypeName }} (в {{ .id.Unit }})</h2>
+        <h2>Точность {{ .id.Precision }} {{ .id.Unit }}</h2>
+        <p>{{ .id.Description }}</p>
         <a href="/?forecast="><h2>Вернуться</h2></a>
     </div>
     </div>
