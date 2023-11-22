@@ -1,22 +1,19 @@
-INSERT INTO users(user_id, login, password, is_moderator)
-VALUES (1 , 'moderator', 'pass_moderator', TRUE),
-       (2 , 'client', 'pass_client', FALSE);
+TRUNCATE TABLE users CASCADE;
+TRUNCATE TABLE data_types CASCADE;
+TRUNCATE TABLE forecast_applications CASCADE;
+TRUNCATE TABLE connector_apps_types CASCADE;
 
---SELECT SETVAL('public."users_id_seq"', COALESCE(MAX(user_id), 1)) FROM public."users";
+INSERT INTO users(user_id, login, password, is_moderator)
+VALUES ('796c70e1-5f27-4433-a415-95e7272effa5' , 'moderator', 'pass_moderator', TRUE),
+       ('5f58c307-a3f2-4b13-b888-c80ad08d5ed3' , 'client', 'pass_client', FALSE);
 
 INSERT INTO data_types(data_type_id, image_path, data_type_name, precision, description, unit, data_type_status)
-VALUES (1 , 'term.svg', 'температуры', 5.0, 'Наши термометры самые точные в мире!!!! Купи прогноз, не пожалеешь!', '℃', 'valid'),
-       (2 , 'gau.svg', 'давления', 4.2, 'Наши манометры самые точные в мире!!!! Купи прогноз, не пожалеешь!', 'мм рт. ст.', 'valid'),
-       (3 , 'rain.svg', 'влажности', 6.6, 'Наши гигрометры самые точные в мире!!!! Купи прогноз, не пожалеешь!', '%', 'valid');
+VALUES ('a20163ce-7be5-46ec-a50f-a313476b2bd1' , 'term.svg', 'температуры', 5.0, 'Наши термометры самые точные в мире!!!! Купи прогноз, не пожалеешь!', '℃', 'valid'),
+       ('0706419e-b024-469d-a354-9480cd79c6a5' , 'gau.svg', 'давления', 4.2, 'Наши манометры самые точные в мире!!!! Купи прогноз, не пожалеешь!', 'мм рт. ст.', 'valid'),
+       ('8f157a95-dad1-43e0-9372-93b51de06163' , 'rain.svg', 'влажности', 6.6, 'Наши гигрометры самые точные в мире!!!! Купи прогноз, не пожалеешь!', '%', 'valid');
 
---SELECT SETVAL('public."data_types_id_seq"', COALESCE(MAX(data_type_id), 1)) FROM public."data_types";
+INSERT INTO forecast_applications(application_id, application_status, application_creation_date, application_formation_date, application_completion_date, creator_id, moderator_id, input_start_date)
+VALUES ('b0247ccd-28ab-45be-9680-f24213cf7aab', 'удалён', '2023-10-25', '2023-10-25', '2023-10-25', '796c70e1-5f27-4433-a415-95e7272effa5', '5f58c307-a3f2-4b13-b888-c80ad08d5ed3', '2023-10-22');
 
---INSERT INTO forecast_applications(application_id, application_status, application_creation_date, application_formation_date, application_completion_date, creator_id, moderator_id)
---VALUES ();
-
---SELECT SETVAL('public."forecast_applications_id_seq"', COALESCE(MAX(application_id), 1)) FROM public."forecast_applications";
-
---INSERT INTO connector_apps_types(data_type_id, application_id, input_first, input_second, input_third, output)
---VALUES ();
-
---SELECT SETVAL('public."connector_apps_types_id_seq"', COALESCE(MAX(id), 1)) FROM public."connector_apps_types";
+INSERT INTO connector_apps_types(data_type_id, application_id, input_first, input_second, input_third, output)
+VALUES ('0706419e-b024-469d-a354-9480cd79c6a5', 'b0247ccd-28ab-45be-9680-f24213cf7aab', 750.0, 740.0, 760.0, NULL);

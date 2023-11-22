@@ -107,68 +107,66 @@ func (r *Repository) GetAllForecastApplications(formationDateStart, formationDat
 	return forecastApplications, nil
 }
 
-//!!!
-
-func (r *Repository) GetDraftTransportation(customerId string) (*ds.Transportation, error) {
-	transportation := &ds.Transportation{}
-	err := r.db.First(transportation, ds.Transportation{Status: ds.DRAFT, CustomerId: customerId}).Error
+func (r *Repository) GetDraftForecastApplication(creatorId string) (*ds.ForecastApplications, error) {
+	application := &ds.ForecastApplications{}
+	err := r.db.First(application, ds.ForecastApplications{ApplicationStatus: ds.DRAFT_APPLICATION, CreatorId: creatorId}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
 	}
-	return transportation, nil
+	return application, nil
 }
 
-func (r *Repository) CreateDraftTransportation(customerId string) (*ds.Transportation, error) {
-	transportation := &ds.Transportation{CreationDate: time.Now(), CustomerId: customerId, Status: ds.DRAFT}
-	err := r.db.Create(transportation).Error
+func (r *Repository) CreateDraftForecastApplication(creatorId string) (*ds.ForecastApplications, error) {
+	application := &ds.ForecastApplications{ApplicationCreationDate: time.Now(), CreatorId: creatorId, ApplicationStatus: ds.DRAFT_APPLICATION}
+	err := r.db.Create(application).Error
 	if err != nil {
 		return nil, err
 	}
-	return transportation, nil
+	return application, nil
 }
 
-func (r *Repository) GetTransportationById(transportationId, customerId string) (*ds.Transportation, error) {
-	transportation := &ds.Transportation{}
+func (r *Repository) GetForecastApplicationById(forecastApplicationId, creatorId string) (*ds.ForecastApplications, error) {
+	application := &ds.ForecastApplications{}
 	err := r.db.Preload("Moderator").Preload("Customer").
-		Where("status != ?", ds.DELETED).
-		First(transportation, ds.Transportation{UUID: transportationId, CustomerId: customerId}).Error
+		Where("status != ?", ds.DELETED_APPLICATION).
+		First(application, ds.ForecastApplications{ApplicationId: forecastApplicationId, CreatorId: creatorId}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err
 	}
-	return transportation, nil
+	return application, nil
 }
 
-func (r *Repository) GetTransportatioinComposition(transportationId string) ([]ds.Container, error) {
-	var containers []ds.Container
+func (r *Repository) GetConnectorAppsTypes(applicationId string) ([]ds.DataTypes, error) {
+	var dataTypes []ds.DataTypes
 
-	err := r.db.Table("transportation_compositions").
-		Select("containers.*").
-		Joins("JOIN containers ON transportation_compositions.container_id = containers.uuid").
-		Where(ds.TransportationComposition{TransportationId: transportationId}).
-		Scan(&containers).Error
+	err := r.db.Table("connector_apps_types").
+		Select("data_types.*").
+		Joins("JOIN data_types ON connector_apps_types.data_type_id = data_types.data_type_id").
+		Where(ds.ConnectorAppsTypes{ApplicationId: applicationId}).
+		Scan(&dataTypes).Error
 
 	if err != nil {
 		return nil, err
 	}
-	return containers, nil
+	return dataTypes, nil
 }
 
-func (r *Repository) SaveTransportation(transportation *ds.Transportation) error {
-	err := r.db.Save(transportation).Error
+func (r *Repository) SaveForecastApplication(application *ds.ForecastApplications) error {
+	err := r.db.Save(application).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Repository) DeleteFromTransportation(transportationId, ContainerId string) error {
-	err := r.db.Delete(&ds.TransportationComposition{TransportationId: transportationId, ContainerId: ContainerId}).Error
+func (r *Repository) DeleteFromConnectorAppsTypes(applicationId, dataTypeId string) error {
+	err := r.db.Delete(&ds.ConnectorAppsTypes{ApplicationId: applicationId, DataTypeId: dataTypeId}).Error
 	if err != nil {
 		return err
 	}
