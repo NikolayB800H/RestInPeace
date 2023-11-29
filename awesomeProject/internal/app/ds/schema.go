@@ -56,3 +56,17 @@ type ConnectorAppsTypes struct {
 	DataType    *DataTypes            `gorm:"foreignKey:DataTypeId" json:"data_type"`
 	Application *ForecastApplications `gorm:"foreignKey:ApplicationId" json:"application"`
 }
+
+type ConnectorAppsTypesDataTypes struct {
+	DataTypeId     string  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"data_type_id" binding:"-"`
+	ImagePath      *string `gorm:"size:256" json:"image_path" binding:"-"`
+	DataTypeName   string  `gorm:"size:128;not null" form:"data_type_name" json:"data_type_name" binding:"required,max=128"`
+	Precision      float64 `gorm:"not null" form:"precision" json:"precision" binding:"required"`
+	Description    string  `gorm:"size:1024;not null" form:"description" json:"description" binding:"required,max=1024"`
+	Unit           string  `gorm:"size:32;not null" form:"unit" json:"unit" binding:"required,max=32"`
+	DataTypeStatus string  `gorm:"size:50;not null" form:"data_type_status" json:"data_type_status" binding:"required,max=50"` // Replace with Enum
+	InputFirst     float64 `gorm:"not null"`
+	InputSecond    float64 `gorm:"not null"`
+	InputThird     float64 `gorm:"not null"`
+	Output         float64
+} //!!!

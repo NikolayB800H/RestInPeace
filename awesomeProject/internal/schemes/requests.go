@@ -30,7 +30,12 @@ type ChangeDataTypeRequest struct {
 }
 
 type AddToForecastApplicationsRequest struct {
-	DataTypeId string `uri:"data_type_id" binding:"required,uuid"`
+	URI struct {
+		DataTypeId string `uri:"data_type_id" binding:"required,uuid"`
+	}
+	InputFirst  float64 `form:"input_first" json:"input_first" binding:"required"`
+	InputSecond float64 `form:"input_second" json:"input_second" binding:"required"`
+	InputThird  float64 `form:"input_third" json:"input_third" binding:"required"`
 }
 
 type GetAllForecastApplicationsRequest struct {
@@ -47,7 +52,7 @@ type UpdateForecastApplicationRequest struct {
 	URI struct {
 		ApplicationId string `uri:"application_id" binding:"required,uuid"`
 	}
-	InputStartDate time.Time `form:"input_start_date" json:"input_start_date" time_format:"2006-01-02 15:04:05"`
+	InputStartDate time.Time `form:"input_start_date" json:"input_start_date" time_format:"2006-01-02"`
 }
 
 type DeleteFromForecastApplicationsRequest struct {

@@ -52,13 +52,11 @@ func (app *Application) GetAllDataTypes(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
 	dataTypes, err := app.repo.GetDataTypeByName(request.DataTypeName)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-
 	draftForecastApplications, err := app.repo.GetDraftForecastApplication(app.getCreator())
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -66,7 +64,7 @@ func (app *Application) GetAllDataTypes(c *gin.Context) {
 	}
 	response := schemes.GetAllDataTypesResponse{DraftForecastApplications: nil, DataTypes: dataTypes}
 	if draftForecastApplications != nil {
-		response.DraftForecastApplications = &schemes.ForecastApplicationsShort{UUID: draftForecastApplications.ApplicationId}
+		response.DraftForecastApplications = &schemes.ForecastApplicationsShort{ApplicationId: draftForecastApplications.ApplicationId}
 		dataTypes, err := app.repo.GetConnectorAppsTypes(draftForecastApplications.ApplicationId)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
@@ -204,20 +202,24 @@ func (app *Application) ChangeDataType(c *gin.Context) {
 
 func (app *Application) AddToForecastApplications(c *gin.Context) {
 	var request schemes.AddToForecastApplicationsRequest
-	if err := c.ShouldBindUri(&request); err != nil {
+	if err := c.ShouldBindUri(&request.URI); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	if err := c.ShouldBind(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	var err error
 
-	// Проверить существует ли контейнер
-	dataType, err := app.repo.GetDataTypeByID(request.DataTypeId)
+	// Проверить существует ли тип данных
+	dataType, err := app.repo.GetDataTypeByID(request.URI.DataTypeId) //!!!
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	if dataType == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("контейнер не найден"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("тип данных не найден"))
 		return
 	}
 
@@ -236,13 +238,13 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 		}
 	}
 
-	// Создать связь меджду перевозкой и контейнером
-	if err = app.repo.AddToConnectorAppsTypes(application.ApplicationId, request.DataTypeId); err != nil {
+	// Создать связь меджду заявкой и типом данных
+	if err = app.repo.AddToConnectorAppsTypes(application.ApplicationId, request.URI.DataTypeId, request.InputFirst, request.InputSecond, request.InputThird); err != nil { //!!!
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	// Вернуть список всех контейнеров в перевозке
+	// Вернуть список всех типов данных в заявке
 	var dataTypes []ds.DataTypes
 	dataTypes, err = app.repo.GetConnectorAppsTypes(application.ApplicationId)
 	if err != nil {
@@ -290,7 +292,7 @@ func (app *Application) GetForecastApplication(c *gin.Context) {
 		return
 	}
 
-	dataTypes, err := app.repo.GetConnectorAppsTypes(request.ApplicationId)
+	dataTypes, err := app.repo.GetConnectorAppsTypesExtended(request.ApplicationId) //!!!
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

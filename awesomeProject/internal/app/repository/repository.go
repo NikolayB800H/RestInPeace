@@ -9,6 +9,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Repository struct {
@@ -16,7 +17,9 @@ type Repository struct {
 }
 
 func New(dsn string) (*Repository, error) {
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +77,8 @@ func (r *Repository) SaveDataType(dataType *ds.DataTypes) error {
 	return nil
 }
 
-func (r *Repository) AddToConnectorAppsTypes(applicationId, dataTypeId string) error {
-	connector := ds.ConnectorAppsTypes{ApplicationId: applicationId, DataTypeId: dataTypeId}
+func (r *Repository) AddToConnectorAppsTypes(applicationId string, dataTypeId string, inputFirst float64, inputSecond float64, inputThird float64) error {
+	connector := ds.ConnectorAppsTypes{ApplicationId: applicationId, DataTypeId: dataTypeId, InputFirst: inputFirst, InputSecond: inputSecond, InputThird: inputThird}
 	err := r.db.Create(&connector).Error
 	if err != nil {
 		return err
@@ -83,16 +86,14 @@ func (r *Repository) AddToConnectorAppsTypes(applicationId, dataTypeId string) e
 	return nil
 }
 
-//////////
-
 func (r *Repository) GetAllForecastApplications(formationDateStart, formationDateEnd *time.Time, status string) ([]ds.ForecastApplications, error) {
 	var forecastApplications []ds.ForecastApplications
 
 	query := r.db.
-		Preload("Customer").
+		Preload("Creator").
 		Preload("Moderator").
 		Where("LOWER(application_status) LIKE ?", "%"+strings.ToLower(status)+"%").
-		Where("status != ?", ds.DELETED_APPLICATION)
+		Where("application_status != ?", ds.DELETED_APPLICATION)
 	if formationDateStart != nil && formationDateEnd != nil {
 		query = query.Where("application_formation_date BETWEEN ? AND ?", *formationDateStart, *formationDateEnd)
 	} else if formationDateStart != nil {
@@ -130,8 +131,8 @@ func (r *Repository) CreateDraftForecastApplication(creatorId string) (*ds.Forec
 
 func (r *Repository) GetForecastApplicationById(forecastApplicationId, creatorId string) (*ds.ForecastApplications, error) {
 	application := &ds.ForecastApplications{}
-	err := r.db.Preload("Moderator").Preload("Customer").
-		Where("status != ?", ds.DELETED_APPLICATION).
+	err := r.db.Preload("Moderator").Preload("Creator").
+		Where("application_status != ?", ds.DELETED_APPLICATION).
 		First(application, ds.ForecastApplications{ApplicationId: forecastApplicationId, CreatorId: creatorId}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -147,6 +148,21 @@ func (r *Repository) GetConnectorAppsTypes(applicationId string) ([]ds.DataTypes
 
 	err := r.db.Table("connector_apps_types").
 		Select("data_types.*").
+		Joins("JOIN data_types ON connector_apps_types.data_type_id = data_types.data_type_id").
+		Where(ds.ConnectorAppsTypes{ApplicationId: applicationId}).
+		Scan(&dataTypes).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return dataTypes, nil
+}
+
+func (r *Repository) GetConnectorAppsTypesExtended(applicationId string) ([]ds.ConnectorAppsTypesDataTypes, error) {
+	var dataTypes []ds.ConnectorAppsTypesDataTypes
+
+	err := r.db.Table("connector_apps_types").
+		Select("*").
 		Joins("JOIN data_types ON connector_apps_types.data_type_id = data_types.data_type_id").
 		Where(ds.ConnectorAppsTypes{ApplicationId: applicationId}).
 		Scan(&dataTypes).Error

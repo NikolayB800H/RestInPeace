@@ -22,18 +22,11 @@ type Application struct {
 	minioClient *minio.Client
 }
 
-/*
-	type GetDataTypesBack struct {
-		DataTypes []ds.DataTypes
-		Name      string
-		Choose    bool
-	}
-*/
 func (app *Application) Run() {
 	r := gin.Default()
 	r.Use(ErrorHandler())
 
-	// Услуги (контейнеры)
+	// Услуги (виды данных)
 	r.GET("/api/data_types", app.GetAllDataTypes)                                                      // Список с поиском
 	r.GET("/api/data_types/:data_type_id", app.GetDataType)                                            // Одна услуга
 	r.DELETE("/api/data_types/:data_type_id", app.DeleteDataType)                                      // Удаление
@@ -41,14 +34,14 @@ func (app *Application) Run() {
 	r.POST("/api/data_types", app.AddDataType)                                                         // Добавление
 	r.POST("/api/data_types/:data_type_id/add_to_forecast_application", app.AddToForecastApplications) // Добавление в заявление
 
-	// Заявки (перевозки)
+	// Заявления (заявки на предсказания)
 	r.GET("/api/forecast_applications", app.GetAllForecastApplications)                                                       // Список (отфильтровать по дате формирования и статусу)
 	r.GET("/api/forecast_applications/:application_id", app.GetForecastApplication)                                           // Одно заявление
 	r.PUT("/api/forecast_applications/:application_id/update", app.UpdateForecastApplication)                                 // Изменение (изменение/добавление начальной даты)
 	r.DELETE("/api/forecast_applications/:application_id", app.DeleteForecastApplication)                                     // Удаление
 	r.DELETE("/api/forecast_applications/:application_id/delete_data_type/:data_type_id", app.DeleteFromForecastApplications) // Изменение (удаление услуг)
 	r.PUT("/api/forecast_applications/:application_id/user_confirm", app.UserConfirm)                                         // Сформировать создателем
-	r.PUT("/api/forecast_applications/:application_id/moderator_confirm", app.ModeratorConfirm)                               // Завершить отклонить модератором
+	r.PUT("/api/forecast_applications/:application_id/moderator_confirm", app.ModeratorConfirm)                               // Завершить или отклонить модератором
 
 	r.Static("/image", "./resources")
 	r.Static("/styles", "styles")

@@ -9,7 +9,7 @@ type AllDataTypesResponse struct {
 }
 
 type ForecastApplicationsShort struct {
-	UUID          string `json:"uuid"`
+	ApplicationId string `json:"application_id"`
 	DataTypeCount int    `json:"data_type_count"`
 }
 
@@ -23,9 +23,9 @@ type AllForecastApplicationssResponse struct {
 }
 
 type ForecastApplicationsResponse struct {
-	ForecastApplications ForecastApplicationsOutput `json:"application"`
-	DataTypes            []ds.DataTypes             `json:"data_types"`
-}
+	ForecastApplications ForecastApplicationsOutput       `json:"application"`
+	DataTypes            []ds.ConnectorAppsTypesDataTypes `json:"data_types"`
+} //!!!
 
 type UpdateForecastApplicationsResponse struct {
 	ForecastApplications ForecastApplicationsOutput `json:"application"`
