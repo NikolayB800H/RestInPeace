@@ -70,3 +70,11 @@ type ModeratorConfirmRequest struct {
 	}
 	Status string `form:"status" json:"status" binding:"required"`
 }
+
+type SetOutputRequest struct {
+	URI struct {
+		DataTypeId    string `uri:"data_type_id" binding:"required,uuid"`
+		ApplicationId string `uri:"application_id" binding:"required,uuid"`
+	}
+	Output float64 `form:"output" json:"output" binding:"required"`
+}

@@ -188,3 +188,11 @@ func (r *Repository) DeleteFromConnectorAppsTypes(applicationId, dataTypeId stri
 	}
 	return nil
 }
+
+func (r *Repository) SetOutputConnectorAppsTypes(applicationId string, dataTypeId string, output float64) error {
+	err := r.db.Model(ds.ConnectorAppsTypes{}).Where("application_id = ? AND data_type_id = ?", applicationId, dataTypeId).Updates(ds.ConnectorAppsTypes{Output: output}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

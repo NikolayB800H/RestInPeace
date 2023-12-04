@@ -32,7 +32,8 @@ func (app *Application) Run() {
 	r.DELETE("/api/data_types/:data_type_id", app.DeleteDataType)                                      // Удаление
 	r.PUT("/api/data_types/:data_type_id", app.ChangeDataType)                                         // Изменение
 	r.POST("/api/data_types", app.AddDataType)                                                         // Добавление
-	r.POST("/api/data_types/:data_type_id/add_to_forecast_application", app.AddToForecastApplications) // Добавление в заявление
+	r.POST("/api/data_types/:data_type_id/add_to_forecast_application", app.AddToForecastApplications) // Добавление в заявление // Связь (связь заявок на предсказания и видов данных)
+	r.PUT("/api/data_types/:data_type_id/set_output/:application_id", app.SetOutput)                   // Изменение выходных данных
 
 	// Заявления (заявки на предсказания)
 	r.GET("/api/forecast_applications", app.GetAllForecastApplications)                                                       // Список (отфильтровать по дате формирования и статусу)
