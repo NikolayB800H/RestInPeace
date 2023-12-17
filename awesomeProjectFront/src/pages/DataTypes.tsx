@@ -37,7 +37,7 @@ const Search: FC<InterfaceSearchProps> = ({ setDataTypes }) => {
                     size="sm"
                     type="submit"
                     className="shadow">
-                    <img src="/search.svg" className="img-fluid"/>
+                    🔍
                 </Button>
             </Form>
         </Navbar>)

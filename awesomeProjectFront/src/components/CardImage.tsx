@@ -7,7 +7,7 @@ interface CardImageProps {
 }
 
 const CardImage = ({ url, className, ...props }: CardImageProps) => {
-    const [src, setSrc] = useState(`${import.meta.env.BASE_URL}placeholder.jpg`);
+    const [src, setSrc] = useState(`${import.meta.env.BASE_URL}Default.jpg`);
 
 
     useEffect(() => {

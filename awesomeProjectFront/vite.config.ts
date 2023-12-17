@@ -9,6 +9,6 @@ export default defineConfig({
       '/api': 'http://localhost:8084',
     }
   },
-  //base: "/awesomeProject/",
+  base: "/RestInPeace",//
   plugins: [react()]
 })
