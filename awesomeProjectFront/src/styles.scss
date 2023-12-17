@@ -1,0 +1,15 @@
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/variables-dark";
+@import "../node_modules/bootstrap/scss/maps";
+@import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/utilities";
+
+$primary: $indigo-600;
+$theme-colors: map-merge($theme-colors, ("primary": $primary));
+
+$box-shadow: 0 0.5rem 1rem rgba(65, 51, 183, .25);
+$box-shadow-sm: 0 .250rem .5rem rgba($black, .25);
+
+// Import all of Bootstrap's CSS
+@import "../node_modules/bootstrap/scss/bootstrap";
