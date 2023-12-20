@@ -239,7 +239,7 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 	}
 
 	// Создать связь меджду заявкой и типом данных
-	if err = app.repo.AddToConnectorAppsTypes(application.ApplicationId, request.URI.DataTypeId, request.InputFirst, request.InputSecond, request.InputThird); err != nil { //!!!
+	if err = app.repo.AddToConnectorAppsTypes(application.ApplicationId, request.URI.DataTypeId); err != nil { //!!!
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
@@ -473,6 +473,25 @@ func (app *Application) SetOutput(c *gin.Context) {
 	}
 
 	if err := app.repo.SetOutputConnectorAppsTypes(request.URI.ApplicationId, request.URI.DataTypeId, request.Output); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (app *Application) SetInput(c *gin.Context) {
+	var request schemes.SetInputRequest
+	if err := c.ShouldBindUri(&request.URI); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	if err := c.ShouldBind(&request); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := app.repo.SetInputConnectorAppsTypes(request.URI.ApplicationId, request.URI.DataTypeId, request.InputFirst, request.InputSecond, request.InputThird); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
