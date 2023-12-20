@@ -13,6 +13,8 @@ type ForecastApplicationsShort struct {
 	DataTypeCount int    `json:"data_type_count"`
 }
 
+// GetAllDataTypesResponse model info
+// @Description Ответ с черновикомм заявки на прогноз и со всеми типами данных
 type GetAllDataTypesResponse struct {
 	DraftForecastApplications *ForecastApplicationsShort `json:"draft_application"`
 	DataTypes                 []ds.DataTypes             `json:"data_types"`

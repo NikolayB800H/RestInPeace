@@ -1,0 +1,1 @@
+(cd ~/swagger-editor/ && sudo docker run -d -p 81:8080 swagger-editor) # http://localhost:81/

@@ -1,0 +1,76 @@
+basePath: /
+definitions:
+  ds.DataTypes:
+    properties:
+      data_type_id:
+        type: string
+      data_type_name:
+        maxLength: 128
+        type: string
+      data_type_status:
+        description: Replace with Enum
+        maxLength: 50
+        type: string
+      description:
+        maxLength: 1024
+        type: string
+      image_path:
+        type: string
+      precision:
+        type: number
+      unit:
+        maxLength: 32
+        type: string
+    required:
+    - data_type_name
+    - data_type_status
+    - description
+    - precision
+    - unit
+    type: object
+  schemes.ForecastApplicationsShort:
+    properties:
+      application_id:
+        type: string
+      data_type_count:
+        type: integer
+    type: object
+  schemes.GetAllDataTypesResponse:
+    description: Ответ с черновикомм заявки на прогноз и со всеми типами данных
+    properties:
+      data_types:
+        items:
+          $ref: '#/definitions/ds.DataTypes'
+        type: array
+      draft_application:
+        $ref: '#/definitions/schemes.ForecastApplicationsShort'
+    type: object
+host: 127.0.0.1
+info:
+  contact:
+    email: gorkunovnm@gmail.com
+    name: Рабраб
+    url: https://github.com/NikolayB800H
+  description: Сервис прогнозирования погодных параметров (условий)
+  license:
+    name: AS IS (NO WARRANTY)
+  title: Прогнозы
+  version: "1.0"
+paths:
+  /api/data_types:
+    get:
+      description: Список видов данных включает только те, что со статусом "доступен"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.GetAllDataTypesResponse'
+      summary: Запросить все виды данных прогнозов и черновик заявки на прогноз
+      tags:
+      - Tests
+schemes:
+- https
+- http
+swagger: "2.0"

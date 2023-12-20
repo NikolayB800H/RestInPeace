@@ -46,6 +46,13 @@ func (app *Application) getModerator() *string {
 	return &moderaorId
 }
 
+// GetAllDataTypes godoc
+// @Summary      Запросить все виды данных прогнозов и черновик заявки на прогноз
+// @Description  Список видов данных включает только те, что со статусом "доступен"
+// @Tags         Tests
+// @Produce      json
+// @Success      200  {object}  schemes.GetAllDataTypesResponse
+// @Router       /api/data_types [get]
 func (app *Application) GetAllDataTypes(c *gin.Context) {
 	var request schemes.GetAllDataTypesRequest
 	if err := c.ShouldBindQuery(&request); err != nil {

@@ -21,6 +21,20 @@ import (
 	"log"
 )
 
+// @title Прогнозы
+// @version 1.0
+// @description Сервис прогнозирования погодных параметров (условий)
+
+// @contact.name Рабраб
+// @contact.url https://github.com/NikolayB800H
+// @contact.email gorkunovnm@gmail.com
+
+// @license.name AS IS (NO WARRANTY)
+
+// @host 127.0.0.1
+// @schemes https http
+// @BasePath /
+
 func main() {
 	app, err := app.New()
 	if err != nil {

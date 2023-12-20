@@ -46,7 +46,7 @@ func (app *Application) Run() {
 
 	r.Static("/image", "./resources")
 	r.Static("/styles", "styles")
-	r.Run(fmt.Sprintf("%s:%d", app.config.ServiceHost, app.config.ServicePort))
+	r.Run(fmt.Sprintf("%s:%d", app.config.ServiceHost, app.config.ServicePort)) // listen and serve on 0.0.0.0:8084 by default
 	log.Println("Server down")
 }
 
