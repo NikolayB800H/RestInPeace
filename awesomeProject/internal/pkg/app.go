@@ -33,16 +33,17 @@ func (app *Application) Run() {
 	r.PUT("/api/data_types/:data_type_id", app.ChangeDataType)                                         // Изменение
 	r.POST("/api/data_types", app.AddDataType)                                                         // Добавление
 	r.POST("/api/data_types/:data_type_id/add_to_forecast_application", app.AddToForecastApplications) // Добавление в заявление // Связь (связь заявок на предсказания и видов данных)
-	r.PUT("/api/data_types/:data_type_id/set_output/:application_id", app.SetOutput)                   // Изменение выходных данных
 
 	// Заявления (заявки на предсказания)
 	r.GET("/api/forecast_applications", app.GetAllForecastApplications)                                                       // Список (отфильтровать по дате формирования и статусу)
 	r.GET("/api/forecast_applications/:application_id", app.GetForecastApplication)                                           // Одно заявление
 	r.PUT("/api/forecast_applications/:application_id/update", app.UpdateForecastApplication)                                 // Изменение (изменение/добавление начальной даты)
 	r.DELETE("/api/forecast_applications/:application_id", app.DeleteForecastApplication)                                     // Удаление
-	r.DELETE("/api/forecast_applications/:application_id/delete_data_type/:data_type_id", app.DeleteFromForecastApplications) // Изменение (удаление услуг)
 	r.PUT("/api/forecast_applications/:application_id/user_confirm", app.UserConfirm)                                         // Сформировать создателем
 	r.PUT("/api/forecast_applications/:application_id/moderator_confirm", app.ModeratorConfirm)                               // Завершить или отклонить модератором
+	r.PUT("/api/forecast_applications/:application_id/set_output/:data_type_id", app.SetOutput)                               // Изменение выходных данных
+	r.DELETE("/api/forecast_applications/:application_id/delete_data_type/:data_type_id", app.DeleteFromForecastApplications) // Изменение (удаление услуг)
+	r.PUT("/api/forecast_applications/:application_id/set_input/:data_type_id", app.SetInput)                                 // Изменение входных данных
 
 	r.Static("/image", "./resources")
 	r.Static("/styles", "styles")

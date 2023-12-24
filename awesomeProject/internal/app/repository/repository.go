@@ -77,8 +77,8 @@ func (r *Repository) SaveDataType(dataType *ds.DataTypes) error {
 	return nil
 }
 
-func (r *Repository) AddToConnectorAppsTypes(applicationId string, dataTypeId string, inputFirst float64, inputSecond float64, inputThird float64) error {
-	connector := ds.ConnectorAppsTypes{ApplicationId: applicationId, DataTypeId: dataTypeId, InputFirst: inputFirst, InputSecond: inputSecond, InputThird: inputThird}
+func (r *Repository) AddToConnectorAppsTypes(applicationId string, dataTypeId string) error {
+	connector := ds.ConnectorAppsTypes{ApplicationId: applicationId, DataTypeId: dataTypeId, InputFirst: 0.0, InputSecond: 0.0, InputThird: 0.0}
 	err := r.db.Create(&connector).Error
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (r *Repository) GetAllForecastApplications(formationDateStart, formationDat
 		Preload("Creator").
 		Preload("Moderator").
 		Where("LOWER(application_status) LIKE ?", "%"+strings.ToLower(status)+"%").
-		Where("application_status != ?", ds.DELETED_APPLICATION)
+		Where("application_status != ? AND application_status != ?", ds.DELETED_APPLICATION, ds.DRAFT_APPLICATION)
 	if formationDateStart != nil && formationDateEnd != nil {
 		query = query.Where("application_formation_date BETWEEN ? AND ?", *formationDateStart, *formationDateEnd)
 	} else if formationDateStart != nil {
@@ -191,6 +191,14 @@ func (r *Repository) DeleteFromConnectorAppsTypes(applicationId, dataTypeId stri
 
 func (r *Repository) SetOutputConnectorAppsTypes(applicationId string, dataTypeId string, output float64) error {
 	err := r.db.Model(ds.ConnectorAppsTypes{}).Where("application_id = ? AND data_type_id = ?", applicationId, dataTypeId).Updates(ds.ConnectorAppsTypes{Output: output}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *Repository) SetInputConnectorAppsTypes(applicationId string, dataTypeId string, inputFirst float64, inputSecond float64, inputThird float64) error {
+	err := r.db.Model(ds.ConnectorAppsTypes{}).Where("application_id = ? AND data_type_id = ?", applicationId, dataTypeId).Updates(ds.ConnectorAppsTypes{InputFirst: inputFirst, InputSecond: inputSecond, InputThird: inputThird}).Error
 	if err != nil {
 		return err
 	}

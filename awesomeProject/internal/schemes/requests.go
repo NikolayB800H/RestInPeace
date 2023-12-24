@@ -33,9 +33,9 @@ type AddToForecastApplicationsRequest struct {
 	URI struct {
 		DataTypeId string `uri:"data_type_id" binding:"required,uuid"`
 	}
-	InputFirst  float64 `form:"input_first" json:"input_first" binding:"required"`
-	InputSecond float64 `form:"input_second" json:"input_second" binding:"required"`
-	InputThird  float64 `form:"input_third" json:"input_third" binding:"required"`
+	//InputFirst  float64 `form:"input_first" json:"input_first" binding:"required"`
+	//InputSecond float64 `form:"input_second" json:"input_second" binding:"required"`
+	//InputThird  float64 `form:"input_third" json:"input_third" binding:"required"`
 }
 
 type GetAllForecastApplicationsRequest struct {
@@ -77,4 +77,14 @@ type SetOutputRequest struct {
 		ApplicationId string `uri:"application_id" binding:"required,uuid"`
 	}
 	Output float64 `form:"output" json:"output" binding:"required"`
+}
+
+type SetInputRequest struct {
+	URI struct {
+		DataTypeId    string `uri:"data_type_id" binding:"required,uuid"`
+		ApplicationId string `uri:"application_id" binding:"required,uuid"`
+	}
+	InputFirst  float64 `form:"input_first" json:"input_first" binding:"required"`
+	InputSecond float64 `form:"input_second" json:"input_second" binding:"required"`
+	InputThird  float64 `form:"input_third" json:"input_third" binding:"required"`
 }
