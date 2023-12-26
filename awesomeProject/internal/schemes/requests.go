@@ -49,9 +49,6 @@ type ForecastApplicationRequest struct {
 }
 
 type UpdateForecastApplicationRequest struct {
-	URI struct {
-		ApplicationId string `uri:"application_id" binding:"required,uuid"`
-	}
 	InputStartDate time.Time `form:"input_start_date" json:"input_start_date" time_format:"2006-01-02"`
 }
 
@@ -81,10 +78,27 @@ type SetOutputRequest struct {
 
 type SetInputRequest struct {
 	URI struct {
-		DataTypeId    string `uri:"data_type_id" binding:"required,uuid"`
-		ApplicationId string `uri:"application_id" binding:"required,uuid"`
+		DataTypeId string `uri:"data_type_id" binding:"required,uuid"`
 	}
 	InputFirst  float64 `form:"input_first" json:"input_first" binding:"required"`
 	InputSecond float64 `form:"input_second" json:"input_second" binding:"required"`
 	InputThird  float64 `form:"input_third" json:"input_third" binding:"required"`
+}
+
+type LoginReq struct {
+	Login    string `form:"login" binding:"required,max=256"`
+	Password string `form:"password" binding:"required,max=256"`
+}
+
+type RegisterReq struct {
+	Login    string `form:"login" binding:"required,max=256"`
+	Password string `form:"password" binding:"required,max=256"`
+}
+
+type CalculateReq struct {
+	URI struct {
+		ApplicationId string `uri:"id" binding:"required,uuid"`
+	}
+	CalculateStatus *bool  `json:"calculate_status" form:"calculate_status" binding:"required"`
+	Token           string `json:"token" form:"token" binding:"required"`
 }

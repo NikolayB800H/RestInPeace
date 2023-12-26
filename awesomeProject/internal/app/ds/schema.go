@@ -2,14 +2,15 @@ package ds
 
 import (
 	// "gorm.io/gorm"
+	"awesomeProject/internal/app/role"
 	"time"
 )
 
 type Users struct {
-	UserId      string `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"-"`
-	Login       string `gorm:"size:256;not null" json:"-"`
-	Password    string `gorm:"size:256;not null" json:"-"`
-	IsModerator bool   `gorm:"not null" json:"-"`
+	UserId   string `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"-"`
+	Login    string `gorm:"size:256;not null" json:"-"`
+	Password string `gorm:"size:256;not null" json:"-"`
+	Role     role.Role
 }
 
 const OK_TYPE string = "доступен"
@@ -31,9 +32,14 @@ const COMPELTED_APPLICATION string = "завершён"
 const REJECTED_APPLICATION string = "отклонён"
 const DELETED_APPLICATION string = "удалён"
 
+const CalculateCompleted string = "прогноз рассчитан"
+const CalculateFailed string = "прогноз отменён"
+const CalculateStarted string = "идёт рассчёт прогноза..."
+
 type ForecastApplications struct {
 	ApplicationId             string     `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
 	ApplicationStatus         string     `gorm:"size:50;not null"` // Replace with Enum
+	CalculateStatus           *string    `gorm:"size:50"`
 	ApplicationCreationDate   time.Time  `gorm:"not null;type:timestamp"`
 	ApplicationFormationDate  *time.Time `gorm:"type:timestamp"`
 	ApplicationCompletionDate *time.Time `gorm:"type:timestamp"`

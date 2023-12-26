@@ -1,5 +1,41 @@
 basePath: /
 definitions:
+  ds.ConnectorAppsTypesDataTypes:
+    properties:
+      data_type_id:
+        type: string
+      data_type_name:
+        maxLength: 128
+        type: string
+      data_type_status:
+        description: Replace with Enum
+        maxLength: 50
+        type: string
+      description:
+        maxLength: 1024
+        type: string
+      image_path:
+        type: string
+      inputFirst:
+        type: number
+      inputSecond:
+        type: number
+      inputThird:
+        type: number
+      output:
+        type: number
+      precision:
+        type: number
+      unit:
+        maxLength: 32
+        type: string
+    required:
+    - data_type_name
+    - data_type_status
+    - description
+    - precision
+    - unit
+    type: object
   ds.DataTypes:
     properties:
       data_type_id:
@@ -28,6 +64,49 @@ definitions:
     - precision
     - unit
     type: object
+  schemes.AllDataTypesResponse:
+    properties:
+      data_types:
+        items:
+          $ref: '#/definitions/ds.DataTypes'
+        type: array
+    type: object
+  schemes.AllForecastApplicationssResponse:
+    properties:
+      applications:
+        items:
+          $ref: '#/definitions/schemes.ForecastApplicationsOutput'
+        type: array
+    type: object
+  schemes.ForecastApplicationsOutput:
+    properties:
+      application_completion_date:
+        type: string
+      application_creation_date:
+        type: string
+      application_formation_date:
+        type: string
+      application_id:
+        type: string
+      application_status:
+        description: Replace with Enum
+        type: string
+      creator:
+        type: string
+      input_start_date:
+        type: string
+      moderator:
+        type: string
+    type: object
+  schemes.ForecastApplicationsResponse:
+    properties:
+      application:
+        $ref: '#/definitions/schemes.ForecastApplicationsOutput'
+      data_types:
+        items:
+          $ref: '#/definitions/ds.ConnectorAppsTypesDataTypes'
+        type: array
+    type: object
   schemes.ForecastApplicationsShort:
     properties:
       application_id:
@@ -44,6 +123,46 @@ definitions:
         type: array
       draft_application:
         $ref: '#/definitions/schemes.ForecastApplicationsShort'
+    type: object
+  schemes.LoginReq:
+    properties:
+      login:
+        maxLength: 256
+        type: string
+      password:
+        maxLength: 256
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  schemes.RegisterReq:
+    properties:
+      login:
+        maxLength: 256
+        type: string
+      password:
+        maxLength: 256
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  schemes.SwaggerLoginResp:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      role:
+        type: integer
+      token_type:
+        type: string
+    type: object
+  schemes.UpdateForecastApplicationsResponse:
+    properties:
+      application:
+        $ref: '#/definitions/schemes.ForecastApplicationsOutput'
     type: object
 host: 127.0.0.1
 info:
@@ -69,7 +188,331 @@ paths:
             $ref: '#/definitions/schemes.GetAllDataTypesResponse'
       summary: Запросить все виды данных прогнозов и черновик заявки на прогноз
       tags:
-      - Tests
+      - Виды данных
+    post:
+      consumes:
+      - multipart/form-data
+      description: Добавляет один вид данных с заданными полями
+      parameters:
+      - description: Изображение вида данных
+        in: formData
+        name: image_path
+        type: file
+      - description: Название вида данных
+        in: formData
+        name: data_type_name
+        required: true
+        type: string
+      - description: Погрешность предсказания вида данных
+        in: formData
+        name: precision
+        required: true
+        type: number
+      - description: Описание вида данных
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Единица измерения вида данных
+        in: formData
+        name: unit
+        required: true
+        type: string
+      - description: Статус вида данных
+        in: formData
+        name: data_type_status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Запросить добавление вида данных прогнозов
+      tags:
+      - Виды данных
+  /api/data_types/{data_type_id}:
+    delete:
+      description: Удаляет один вид данных по его data_type_id
+      parameters:
+      - description: уникальный идентификатор вида данных
+        in: path
+        name: data_type_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Запросить удаление вида данных прогнозов
+      tags:
+      - Виды данных
+    get:
+      description: Возвращает более подробную информацию об одном виде данных
+      parameters:
+      - description: уникальный идентификатор вида данных
+        in: path
+        name: data_type_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ds.DataTypes'
+      summary: Запросить один вид данных прогнозов
+      tags:
+      - Виды данных
+    post:
+      description: Добавляет данный вид данных в черновик заявки
+      parameters:
+      - description: уникальный идентификатор вида данных
+        in: path
+        name: data_type_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.AllDataTypesResponse'
+      summary: Запросить добавление вида данных в заявку на прогноз
+      tags:
+      - Виды данных
+    put:
+      consumes:
+      - multipart/form-data
+      description: Изменяет один вид данных
+      parameters:
+      - description: уникальный идентификатор вида данных
+        in: path
+        name: data_type_id
+        required: true
+        type: string
+      - description: Изображение вида данных
+        in: formData
+        name: image_path
+        type: file
+      - description: Название вида данных
+        in: formData
+        name: data_type_name
+        required: true
+        type: string
+      - description: Погрешность предсказания вида данных
+        in: formData
+        name: precision
+        required: true
+        type: number
+      - description: Описание вида данных
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Единица измерения вида данных
+        in: formData
+        name: unit
+        required: true
+        type: string
+      - description: Статус вида данных
+        in: formData
+        name: data_type_status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Запросить изменение вида данных прогнозов
+      tags:
+      - Виды данных
+  /api/forecast_applications:
+    delete:
+      description: Удаляет черновую заявку пользователя
+      responses:
+        "200":
+          description: OK
+      summary: Удалить черновую заявку
+      tags:
+      - Заявки на прогнозы
+    get:
+      description: Возвращает все заявки с фильтрацией по статусу и дате формирования
+      parameters:
+      - description: статус заявки
+        in: query
+        name: status
+        type: string
+      - description: начальная дата формирования
+        in: query
+        name: formation_date_start
+        type: string
+      - description: конечная дата формирвания
+        in: query
+        name: formation_date_end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.AllForecastApplicationssResponse'
+      summary: Запросить все заявки на прогнозы
+      tags:
+      - Заявки на прогнозы
+  /api/forecast_applications/:
+    put:
+      description: Изменяет дату начала входных измерений черновика и возвращает его
+      parameters:
+      - description: дата начала входных измерений
+        in: query
+        name: input_start_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
+      summary: Запросить изменение черновика
+      tags:
+      - Заявки на прогнозы
+  /api/forecast_applications/{application_id}:
+    get:
+      description: Возвращает более подробную информацию о заявке
+      parameters:
+      - description: уникальный идентификатор заявки
+        in: path
+        name: application_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.ForecastApplicationsResponse'
+      summary: Запросить одну заявку на прогноз
+      tags:
+      - Заявки на прогнозы
+  /api/forecast_applications/{application_id}/moderator_confirm:
+    put:
+      description: Подтвердить или отменить заявку модератором
+      parameters:
+      - description: уникальный идентификатор заявки
+        in: path
+        name: application_id
+        required: true
+        type: string
+      - description: статус заявки
+        in: query
+        name: status
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
+      summary: Подтвердить заявку
+      tags:
+      - Заявки на прогнозы
+  /api/forecast_applications/delete_data_type/{data_type_id}:
+    delete:
+      description: Удаляет один вид данных по его data_type_id
+      parameters:
+      - description: уникальный идентификатор вида данных
+        in: path
+        name: data_type_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.AllDataTypesResponse'
+      summary: Запросить удаление вида данных из черновика заявки
+      tags:
+      - Заявки на прогнозы
+  /api/forecast_applications/user_confirm:
+    put:
+      description: Сформировать заявку пользователем
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
+      summary: Запросить формирование заявки
+      tags:
+      - Заявки на прогнозы
+  /api/user/login:
+    post:
+      consumes:
+      - application/json
+      description: Авторизует пользователя по логиню, паролю и отдаёт jwt токен для
+        дальнейших запросов
+      parameters:
+      - description: login and password
+        in: body
+        name: user_credentials
+        required: true
+        schema:
+          $ref: '#/definitions/schemes.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.SwaggerLoginResp'
+      summary: Авторизация
+      tags:
+      - Авторизация
+  /api/user/loguot:
+    post:
+      consumes:
+      - application/json
+      description: Выход из аккаунта
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Выйти из аккаунта
+      tags:
+      - Авторизация
+  /api/user/sign_up:
+    post:
+      consumes:
+      - application/json
+      description: Регистрация нового пользователя
+      parameters:
+      - description: login and password
+        in: body
+        name: user_credentials
+        required: true
+        schema:
+          $ref: '#/definitions/schemes.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.SwaggerLoginResp'
+      summary: Регистрация
+      tags:
+      - Авторизация
 schemes:
 - https
 - http

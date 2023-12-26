@@ -86,7 +86,7 @@ func (r *Repository) AddToConnectorAppsTypes(applicationId string, dataTypeId st
 	return nil
 }
 
-func (r *Repository) GetAllForecastApplications(formationDateStart, formationDateEnd *time.Time, status string) ([]ds.ForecastApplications, error) {
+func (r *Repository) GetAllForecastApplications(creatorId *string, formationDateStart, formationDateEnd *time.Time, status string) ([]ds.ForecastApplications, error) {
 	var forecastApplications []ds.ForecastApplications
 
 	query := r.db.
@@ -94,6 +94,9 @@ func (r *Repository) GetAllForecastApplications(formationDateStart, formationDat
 		Preload("Moderator").
 		Where("LOWER(application_status) LIKE ?", "%"+strings.ToLower(status)+"%").
 		Where("application_status != ? AND application_status != ?", ds.DELETED_APPLICATION, ds.DRAFT_APPLICATION)
+	if creatorId != nil {
+		query = query.Where("creator_id = ?", *creatorId)
+	}
 	if formationDateStart != nil && formationDateEnd != nil {
 		query = query.Where("application_formation_date BETWEEN ? AND ?", *formationDateStart, *formationDateEnd)
 	} else if formationDateStart != nil {
@@ -129,11 +132,14 @@ func (r *Repository) CreateDraftForecastApplication(creatorId string) (*ds.Forec
 	return application, nil
 }
 
-func (r *Repository) GetForecastApplicationById(forecastApplicationId, creatorId string) (*ds.ForecastApplications, error) {
+func (r *Repository) GetForecastApplicationById(forecastApplicationId string, creatorId *string) (*ds.ForecastApplications, error) {
 	application := &ds.ForecastApplications{}
-	err := r.db.Preload("Moderator").Preload("Creator").
-		Where("application_status != ?", ds.DELETED_APPLICATION).
-		First(application, ds.ForecastApplications{ApplicationId: forecastApplicationId, CreatorId: creatorId}).Error
+	query := r.db.Preload("Moderator").Preload("Creator").
+		Where("application_status != ?", ds.DELETED_APPLICATION)
+	if creatorId != nil {
+		query = query.Where("creator_id = ?", creatorId)
+	}
+	err := query.First(application, ds.ForecastApplications{ApplicationId: forecastApplicationId}).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -203,4 +209,30 @@ func (r *Repository) SetInputConnectorAppsTypes(applicationId string, dataTypeId
 		return err
 	}
 	return nil
+}
+
+func (r *Repository) AddUser(user *ds.Users) error {
+	return r.db.Create(user).Error
+}
+
+func (r *Repository) GetUserByLogin(login string) (*ds.Users, error) {
+	user := &ds.Users{}
+	if err := r.db.Where("login = ?", login).First(user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return user, nil
+}
+
+func (r *Repository) GetUserById(uuid string) (*ds.Users, error) {
+	user := &ds.Users{}
+	if err := r.db.Where("uuid = ?", uuid).First(user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return user, nil
 }

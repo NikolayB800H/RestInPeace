@@ -2,56 +2,21 @@ package app
 
 import (
 	"awesomeProject/internal/app/ds"
+	"awesomeProject/internal/app/role"
 	"awesomeProject/internal/schemes"
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"time"
 
-	"mime/multipart"
-
 	"github.com/gin-gonic/gin"
-	"github.com/minio/minio-go/v7"
 )
-
-func (app *Application) uploadImage(c *gin.Context, image *multipart.FileHeader, UUID string) (*string, error) {
-	src, err := image.Open()
-	if err != nil {
-		return nil, err
-	}
-	defer src.Close()
-
-	extension := filepath.Ext(image.Filename)
-	if extension != ".jpg" && extension != ".jpeg" {
-		return nil, fmt.Errorf("разрешены только jpeg изображения")
-	}
-	imageName := UUID + extension
-
-	_, err = app.minioClient.PutObject(c, app.config.BucketName, imageName, src, image.Size, minio.PutObjectOptions{
-		ContentType: "image/jpeg",
-	})
-	if err != nil {
-		return nil, err
-	}
-	imageURL := fmt.Sprintf("%s/%s/%s", app.config.MinioEndpoint, app.config.BucketName, imageName)
-	return &imageURL, nil
-}
-
-func (app *Application) getCreator() string {
-	return "5f58c307-a3f2-4b13-b888-c80ad08d5ed3"
-}
-
-func (app *Application) getModerator() *string {
-	moderaorId := "796c70e1-5f27-4433-a415-95e7272effa5"
-	return &moderaorId
-}
 
 // GetAllDataTypes godoc
 // @Summary      Запросить все виды данных прогнозов и черновик заявки на прогноз
 // @Description  Список видов данных включает только те, что со статусом "доступен"
-// @Tags         Tests
+// @Tags         Виды данных
 // @Produce      json
-// @Success      200  {object}  schemes.GetAllDataTypesResponse
+// @Success      200 {object} schemes.GetAllDataTypesResponse
 // @Router       /api/data_types [get]
 func (app *Application) GetAllDataTypes(c *gin.Context) {
 	var request schemes.GetAllDataTypesRequest
@@ -64,10 +29,13 @@ func (app *Application) GetAllDataTypes(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	draftForecastApplications, err := app.repo.GetDraftForecastApplication(app.getCreator())
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
+	var draftForecastApplications *ds.ForecastApplications = nil
+	if userId, exists := c.Get("userId"); exists {
+		draftForecastApplications, err = app.repo.GetDraftForecastApplication(userId.(string))
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 	}
 	response := schemes.GetAllDataTypesResponse{DraftForecastApplications: nil, DataTypes: dataTypes}
 	if draftForecastApplications != nil {
@@ -82,6 +50,14 @@ func (app *Application) GetAllDataTypes(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// GetDataType godoc
+// @Summary      Запросить один вид данных прогнозов
+// @Description  Возвращает более подробную информацию об одном виде данных
+// @Tags         Виды данных
+// @Param        data_type_id path string true "уникальный идентификатор вида данных"
+// @Produce      json
+// @Success      200 {object} ds.DataTypes
+// @Router       /api/data_types/{data_type_id} [get]
 func (app *Application) GetDataType(c *gin.Context) {
 	var request schemes.DataTypeRequest
 	if err := c.ShouldBindUri(&request); err != nil {
@@ -101,6 +77,14 @@ func (app *Application) GetDataType(c *gin.Context) {
 	c.JSON(http.StatusOK, dataType)
 }
 
+// DeleteDataType godoc
+// @Summary      Запросить удаление вида данных прогнозов
+// @Description  Удаляет один вид данных по его data_type_id
+// @Tags         Виды данных
+// @Param        data_type_id path string true "уникальный идентификатор вида данных"
+// @Produce      json
+// @Success      200
+// @Router       /api/data_types/{data_type_id} [delete]
 func (app *Application) DeleteDataType(c *gin.Context) {
 	var request schemes.DataTypeRequest
 	if err := c.ShouldBindUri(&request); err != nil {
@@ -117,6 +101,13 @@ func (app *Application) DeleteDataType(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("тип данных не найден"))
 		return
 	}
+	if dataType.ImagePath != nil {
+		if err := app.deleteImage(c, dataType.DataTypeId); err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+	}
+	dataType.ImagePath = nil
 	dataType.DataTypeStatus = ds.DELETED_TYPE
 	if err := app.repo.SaveDataType(dataType); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -126,6 +117,20 @@ func (app *Application) DeleteDataType(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// AddDataType godoc
+// @Summary      Запросить добавление вида данных прогнозов
+// @Description  Добавляет один вид данных с заданными полями
+// @Tags         Виды данных
+// @Accept       mpfd
+// @Param        image_path       formData file   false "Изображение вида данных"
+// @Param        data_type_name   formData string true  "Название вида данных"
+// @Param        precision        formData number true  "Погрешность предсказания вида данных"
+// @Param        description      formData string true  "Описание вида данных"
+// @Param        unit             formData string true  "Единица измерения вида данных"
+// @Param        data_type_status formData string true  "Статус вида данных"
+// @Produce      json
+// @Success      200
+// @Router       /api/data_types [post]
 func (app *Application) AddDataType(c *gin.Context) {
 	var request schemes.AddDataTypeRequest
 	if err := c.ShouldBind(&request); err != nil {
@@ -155,6 +160,21 @@ func (app *Application) AddDataType(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// ChangeDataType godoc
+// @Summary      Запросить изменение вида данных прогнозов
+// @Description  Изменяет один вид данных
+// @Tags         Виды данных
+// @Accept       mpfd
+// @Param        data_type_id     path     string true  "уникальный идентификатор вида данных"
+// @Param        image_path       formData file   false "Изображение вида данных"
+// @Param        data_type_name   formData string true  "Название вида данных"
+// @Param        precision        formData number true  "Погрешность предсказания вида данных"
+// @Param        description      formData string true  "Описание вида данных"
+// @Param        unit             formData string true  "Единица измерения вида данных"
+// @Param        data_type_status formData string true  "Статус вида данных"
+// @Produce      json
+// @Success      200
+// @Router       /api/data_types/{data_type_id} [put]
 func (app *Application) ChangeDataType(c *gin.Context) {
 	var request schemes.ChangeDataTypeRequest
 	if err := c.ShouldBindUri(&request); err != nil {
@@ -176,6 +196,12 @@ func (app *Application) ChangeDataType(c *gin.Context) {
 		return
 	}
 	if request.ImagePath != nil {
+		if dataType.ImagePath != nil {
+			if err := app.deleteImage(c, dataType.DataTypeId); err != nil {
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+		}
 		imagePath, err := app.uploadImage(c, request.ImagePath, dataType.DataTypeId)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
@@ -207,16 +233,24 @@ func (app *Application) ChangeDataType(c *gin.Context) {
 	c.JSON(http.StatusOK, dataType)
 }
 
+// AddToForecastApplications godoc
+// @Summary      Запросить добавление вида данных в заявку на прогноз
+// @Description  Добавляет данный вид данных в черновик заявки
+// @Tags         Виды данных
+// @Param        data_type_id path string true "уникальный идентификатор вида данных"
+// @Produce      json
+// @Success      200 {object} schemes.AllDataTypesResponse
+// @Router       /api/data_types/{data_type_id} [post]
 func (app *Application) AddToForecastApplications(c *gin.Context) {
 	var request schemes.AddToForecastApplicationsRequest
 	if err := c.ShouldBindUri(&request.URI); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	if err := c.ShouldBind(&request); err != nil {
+	/*if err := c.ShouldBind(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
-	}
+	}*/
 	var err error
 
 	// Проверить существует ли тип данных
@@ -232,13 +266,14 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 
 	// Получить черновую заявку
 	var application *ds.ForecastApplications
-	application, err = app.repo.GetDraftForecastApplication(app.getCreator())
+	userId := getUserId(c)
+	application, err = app.repo.GetDraftForecastApplication(userId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	if application == nil {
-		application, err = app.repo.CreateDraftForecastApplication(app.getCreator())
+		application, err = app.repo.CreateDraftForecastApplication(userId)
 		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
@@ -262,14 +297,33 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 	c.JSON(http.StatusOK, schemes.AllDataTypesResponse{DataTypes: dataTypes})
 }
 
+// GetAllForecastApplications godoc
+// @Summary      Запросить все заявки на прогнозы
+// @Description  Возвращает все заявки с фильтрацией по статусу и дате формирования
+// @Tags         Заявки на прогнозы
+// @Param        status               query string false "статус заявки"
+// @Param        formation_date_start query string false "начальная дата формирования"
+// @Param        formation_date_end   query string false "конечная дата формирвания"
+// @Produce      json
+// @Success      200 {object} schemes.AllForecastApplicationssResponse
+// @Router       /api/forecast_applications [get]
 func (app *Application) GetAllForecastApplications(c *gin.Context) {
 	var request schemes.GetAllForecastApplicationsRequest
+	var err error
 	if err := c.ShouldBindQuery(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	applications, err := app.repo.GetAllForecastApplications(request.FormationDateStart, request.FormationDateEnd, request.Status)
+	userId := getUserId(c)
+	userRole := getUserRole(c)
+	fmt.Println(userId, userRole)
+	var applications []ds.ForecastApplications
+	if userRole == role.Client {
+		applications, err = app.repo.GetAllForecastApplications(&userId, request.FormationDateStart, request.FormationDateEnd, request.Status)
+	} else {
+		applications, err = app.repo.GetAllForecastApplications(nil, request.FormationDateStart, request.FormationDateEnd, request.Status)
+	}
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -282,14 +336,29 @@ func (app *Application) GetAllForecastApplications(c *gin.Context) {
 	c.JSON(http.StatusOK, schemes.AllForecastApplicationssResponse{ForecastApplications: outputForecastApplications})
 }
 
+// GetForecastApplication godoc
+// @Summary      Запросить одну заявку на прогноз
+// @Description  Возвращает более подробную информацию о заявке
+// @Tags         Заявки на прогнозы
+// @Param        application_id path string true "уникальный идентификатор заявки"
+// @Produce      json
+// @Success      200 {object} schemes.ForecastApplicationsResponse
+// @Router       /api/forecast_applications/{application_id} [get]
 func (app *Application) GetForecastApplication(c *gin.Context) {
 	var request schemes.ForecastApplicationRequest
+	var err error
 	if err := c.ShouldBindUri(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
-	application, err := app.repo.GetForecastApplicationById(request.ApplicationId, app.getCreator())
+	userId := getUserId(c)
+	userRole := getUserRole(c)
+	var application *ds.ForecastApplications
+	if userRole == role.Moderator {
+		application, err = app.repo.GetForecastApplicationById(request.ApplicationId, nil)
+	} else {
+		application, err = app.repo.GetForecastApplicationById(request.ApplicationId, &userId)
+	}
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -307,17 +376,24 @@ func (app *Application) GetForecastApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, schemes.ForecastApplicationsResponse{ForecastApplications: schemes.ConvertForecastApplications(application), DataTypes: dataTypes})
 }
 
+// UpdateForecastApplication godoc
+// @Summary      Запросить изменение черновика
+// @Description  Изменяет дату начала входных измерений черновика и возвращает его
+// @Tags         Заявки на прогнозы
+// @Param        input_start_date query string false "дата начала входных измерений"
+// @Produce      json
+// @Success      200 {object} schemes.UpdateForecastApplicationsResponse
+// @Router       /api/forecast_applications/ [put]
 func (app *Application) UpdateForecastApplication(c *gin.Context) {
 	var request schemes.UpdateForecastApplicationRequest
-	if err := c.ShouldBindUri(&request.URI); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
+	var err error
 	if err := c.ShouldBind(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	application, err := app.repo.GetForecastApplicationById(request.URI.ApplicationId, app.getCreator())
+	userId := getUserId(c)
+	var application *ds.ForecastApplications
+	application, err = app.repo.GetDraftForecastApplication(userId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -335,14 +411,17 @@ func (app *Application) UpdateForecastApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, schemes.UpdateForecastApplicationsResponse{ForecastApplications: schemes.ConvertForecastApplications(application)})
 }
 
+// DeleteForecastApplication godoc
+// @Summary      Удалить черновую заявку
+// @Description  Удаляет черновую заявку пользователя
+// @Tags         Заявки на прогнозы
+// @Success      200
+// @Router       /api/forecast_applications [delete]
 func (app *Application) DeleteForecastApplication(c *gin.Context) {
-	var request schemes.ForecastApplicationRequest
-	if err := c.ShouldBindUri(&request); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	application, err := app.repo.GetForecastApplicationById(request.ApplicationId, app.getCreator())
+	var err error
+	var application *ds.ForecastApplications
+	userId := getUserId(c)
+	application, err = app.repo.GetDraftForecastApplication(userId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -360,13 +439,24 @@ func (app *Application) DeleteForecastApplication(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// DeleteFromForecastApplications godoc
+// @Summary      Запросить удаление вида данных из черновика заявки
+// @Description  Удаляет один вид данных по его data_type_id
+// @Tags         Заявки на прогнозы
+// @Param        data_type_id path string true "уникальный идентификатор вида данных"
+// @Produce      json
+// @Success      200 {object} schemes.AllDataTypesResponse
+// @Router       /api/forecast_applications/delete_data_type/{data_type_id} [delete]
 func (app *Application) DeleteFromForecastApplications(c *gin.Context) {
 	var request schemes.DeleteFromForecastApplicationsRequest
+	var err error
 	if err := c.ShouldBindUri(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	application, err := app.repo.GetForecastApplicationById(request.ApplicationId, app.getCreator())
+	var application *ds.ForecastApplications
+	userId := getUserId(c)
+	application, err = app.repo.GetDraftForecastApplication(userId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -394,14 +484,16 @@ func (app *Application) DeleteFromForecastApplications(c *gin.Context) {
 	c.JSON(http.StatusOK, schemes.AllDataTypesResponse{DataTypes: dataTypes})
 }
 
+// UserConfirm godoc
+// @Summary      Запросить формирование заявки
+// @Description  Сформировать заявку пользователем
+// @Tags         Заявки на прогнозы
+// @Produce      json
+// @Success      200 {object} schemes.UpdateForecastApplicationsResponse
+// @Router       /api/forecast_applications/user_confirm [put]
 func (app *Application) UserConfirm(c *gin.Context) {
-	var request schemes.UserConfirmRequest
-	if err := c.ShouldBindUri(&request); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	application, err := app.repo.GetForecastApplicationById(request.ApplicationId, app.getCreator())
+	userId := getUserId(c)
+	application, err := app.repo.GetDraftForecastApplication(userId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -410,10 +502,13 @@ func (app *Application) UserConfirm(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
 		return
 	}
-	if application.ApplicationStatus != ds.DRAFT_APPLICATION {
-		c.AbortWithError(http.StatusMethodNotAllowed, fmt.Errorf("нельзя сформировать заявление со статусом %s", application.ApplicationStatus))
+	if err := calculateRequest(application.ApplicationId); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf(`Сервис расчета прогноза не доступен: {%s}`, err))
 		return
 	}
+
+	calculateStatus := ds.CalculateStarted
+	application.CalculateStatus = &calculateStatus
 	application.ApplicationStatus = ds.FORMED_APPLICATION
 	now := time.Now()
 	application.ApplicationFormationDate = &now
@@ -422,9 +517,17 @@ func (app *Application) UserConfirm(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, schemes.UpdateForecastApplicationsResponse{ForecastApplications: schemes.ConvertForecastApplications(application)})
 }
 
+// ModeratorConfirm godoc
+// @Summary      Подтвердить заявку
+// @Description  Подтвердить или отменить заявку модератором
+// @Tags         Заявки на прогнозы
+// @Param        application_id path  string true  "уникальный идентификатор заявки"
+// @Param        status         query string false "статус заявки"
+// @Success      200 {object} schemes.UpdateForecastApplicationsResponse
+// @Router       /api/forecast_applications/{application_id}/moderator_confirm [put]
 func (app *Application) ModeratorConfirm(c *gin.Context) {
 	var request schemes.ModeratorConfirmRequest
 	if err := c.ShouldBindUri(&request.URI); err != nil {
@@ -440,8 +543,8 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("нельзя изменить статус на %s", request.Status))
 		return
 	}
-
-	application, err := app.repo.GetForecastApplicationById(request.URI.ApplicationId, app.getCreator())
+	userId := getUserId(c)
+	application, err := app.repo.GetForecastApplicationById(request.URI.ApplicationId, &userId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -455,17 +558,23 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 		return
 	}
 	application.ApplicationStatus = request.Status
-	application.ModeratorId = app.getModerator()
 	if request.Status == ds.COMPELTED_APPLICATION {
 		now := time.Now()
 		application.ApplicationCompletionDate = &now
 	}
+	moderator, err := app.repo.GetUserById(userId)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	application.ModeratorId = &userId
+	application.Moderator = moderator
 
 	if err := app.repo.SaveForecastApplication(application); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, schemes.UpdateForecastApplicationsResponse{ForecastApplications: schemes.ConvertForecastApplications(application)})
 }
 
 func (app *Application) SetOutput(c *gin.Context) {
@@ -489,6 +598,31 @@ func (app *Application) SetOutput(c *gin.Context) {
 
 func (app *Application) SetInput(c *gin.Context) {
 	var request schemes.SetInputRequest
+	if err := c.ShouldBind(&request); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	userId := getUserId(c)
+	application, err := app.repo.GetDraftForecastApplication(userId)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	if application == nil {
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		return
+	}
+	if err := app.repo.SetInputConnectorAppsTypes(application.ApplicationId, request.URI.DataTypeId, request.InputFirst, request.InputSecond, request.InputThird); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func (app *Application) Calculate(c *gin.Context) {
+	var request schemes.CalculateReq
 	if err := c.ShouldBindUri(&request.URI); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -498,10 +632,32 @@ func (app *Application) SetInput(c *gin.Context) {
 		return
 	}
 
-	if err := app.repo.SetInputConnectorAppsTypes(request.URI.ApplicationId, request.URI.DataTypeId, request.InputFirst, request.InputSecond, request.InputThird); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+	if request.Token != app.config.Token {
+		c.AbortWithStatus(http.StatusForbidden)
 		return
 	}
 
+	application, err := app.repo.GetForecastApplicationById(request.URI.ApplicationId, nil)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	if application == nil {
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("перевозка не найдена"))
+		return
+	}
+
+	var calculateStatus string
+	if *request.CalculateStatus {
+		calculateStatus = ds.CalculateCompleted
+	} else {
+		calculateStatus = ds.CalculateFailed
+	}
+	application.CalculateStatus = &calculateStatus
+
+	if err := app.repo.SaveForecastApplication(application); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 	c.Status(http.StatusOK)
 }
