@@ -66,10 +66,10 @@ func (app *Application) Run() {
 			u.POST("/logout", app.Logout)
 		}
 	}
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) // http://0.0.0.0:8084/swagger/index.html
 	r.Static("/image", "./resources")
 	r.Static("/styles", "styles")
-	r.Run(fmt.Sprintf("%s:%d", app.config.ServiceHost, app.config.ServicePort)) // listen and serve on 0.0.0.0:8084 by default
+	r.Run(fmt.Sprintf("%s:%d", app.config.ServiceHost, app.config.ServicePort)) // 0.0.0.0:8084 по умолчанию
 	log.Println("Server down")
 }
 
@@ -92,6 +92,11 @@ func New() (*Application, error) {
 		Creds:  credentials.NewStaticV4("", "", ""),
 		Secure: false,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	app.redisClient, err = redis.New(app.config.Redis)
 	if err != nil {
 		return nil, err
 	}

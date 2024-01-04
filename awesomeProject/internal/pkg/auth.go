@@ -65,7 +65,7 @@ func (app *Application) Register(c *gin.Context) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: &jwt.NumericDate{time.Now().Add(JWTConfig.ExpiresIn)},
 			IssuedAt:  &jwt.NumericDate{time.Now()},
-			Issuer:    "bitop-admin",
+			Issuer:    "admin",
 		},
 		UserUUID: user.UserId,
 		Role:     user.Role,
@@ -169,7 +169,9 @@ func (app *Application) Logout(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-
+	//log.Println(result.Error)
+	//printContextInternals(c.Request.Context(), false)
+	log.Println(app)
 	err = app.redisClient.WriteJWTToBlacklist(c.Request.Context(), jwtStr, app.config.JWT.ExpiresIn)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)

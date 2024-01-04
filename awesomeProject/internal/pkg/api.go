@@ -503,7 +503,7 @@ func (app *Application) UserConfirm(c *gin.Context) {
 		return
 	}
 	if err := calculateRequest(application.ApplicationId); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf(`Сервис расчета прогноза не доступен: {%s}`, err))
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf(`сервис расчета прогноза не доступен: {%s}`, err))
 		return
 	}
 
