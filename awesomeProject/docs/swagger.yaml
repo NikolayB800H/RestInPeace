@@ -186,6 +186,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.GetAllDataTypesResponse'
+      security:
+      - BearerAuth: []
       summary: Запросить все виды данных прогнозов и черновик заявки на прогноз
       tags:
       - Виды данных
@@ -228,6 +230,8 @@ paths:
       responses:
         "200":
           description: OK
+      security:
+      - BearerAuth: []
       summary: Запросить добавление вида данных прогнозов
       tags:
       - Виды данных
@@ -245,6 +249,8 @@ paths:
       responses:
         "200":
           description: OK
+      security:
+      - BearerAuth: []
       summary: Запросить удаление вида данных прогнозов
       tags:
       - Виды данных
@@ -263,6 +269,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/ds.DataTypes'
+      security:
+      - BearerAuth: []
       summary: Запросить один вид данных прогнозов
       tags:
       - Виды данных
@@ -281,6 +289,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.AllDataTypesResponse'
+      security:
+      - BearerAuth: []
       summary: Запросить добавление вида данных в заявку на прогноз
       tags:
       - Виды данных
@@ -328,6 +338,8 @@ paths:
       responses:
         "200":
           description: OK
+      security:
+      - BearerAuth: []
       summary: Запросить изменение вида данных прогнозов
       tags:
       - Виды данных
@@ -337,6 +349,8 @@ paths:
       responses:
         "200":
           description: OK
+      security:
+      - BearerAuth: []
       summary: Удалить черновую заявку
       tags:
       - Заявки на прогнозы
@@ -362,6 +376,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.AllForecastApplicationssResponse'
+      security:
+      - BearerAuth: []
       summary: Запросить все заявки на прогнозы
       tags:
       - Заявки на прогнозы
@@ -380,6 +396,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
+      security:
+      - BearerAuth: []
       summary: Запросить изменение черновика
       tags:
       - Заявки на прогнозы
@@ -399,6 +417,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.ForecastApplicationsResponse'
+      security:
+      - BearerAuth: []
       summary: Запросить одну заявку на прогноз
       tags:
       - Заявки на прогнозы
@@ -420,6 +440,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
+      security:
+      - BearerAuth: []
       summary: Подтвердить заявку
       tags:
       - Заявки на прогнозы
@@ -439,6 +461,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.AllDataTypesResponse'
+      security:
+      - BearerAuth: []
       summary: Запросить удаление вида данных из черновика заявки
       tags:
       - Заявки на прогнозы
@@ -452,6 +476,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
+      security:
+      - BearerAuth: []
       summary: Запросить формирование заявки
       tags:
       - Заявки на прогнозы
@@ -478,7 +504,7 @@ paths:
       summary: Авторизация
       tags:
       - Авторизация
-  /api/user/loguot:
+  /api/user/logout:
     post:
       consumes:
       - application/json
@@ -488,6 +514,8 @@ paths:
       responses:
         "200":
           description: OK
+      security:
+      - BearerAuth: []
       summary: Выйти из аккаунта
       tags:
       - Авторизация
@@ -516,4 +544,9 @@ paths:
 schemes:
 - https
 - http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

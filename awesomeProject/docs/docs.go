@@ -24,6 +24,11 @@ const docTemplate = `{
     "paths": {
         "/api/data_types": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Список видов данных включает только те, что со статусом \"доступен\"",
                 "produces": [
                     "application/json"
@@ -42,6 +47,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Добавляет один вид данных с заданными полями",
                 "consumes": [
                     "multipart/form-data"
@@ -105,6 +115,11 @@ const docTemplate = `{
         },
         "/api/data_types/{data_type_id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Возвращает более подробную информацию об одном виде данных",
                 "produces": [
                     "application/json"
@@ -132,6 +147,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Изменяет один вид данных",
                 "consumes": [
                     "multipart/form-data"
@@ -200,6 +220,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Добавляет данный вид данных в черновик заявки",
                 "produces": [
                     "application/json"
@@ -227,6 +252,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удаляет один вид данных по его data_type_id",
                 "produces": [
                     "application/json"
@@ -253,6 +283,11 @@ const docTemplate = `{
         },
         "/api/forecast_applications": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Возвращает все заявки с фильтрацией по статусу и дате формирования",
                 "produces": [
                     "application/json"
@@ -291,6 +326,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удаляет черновую заявку пользователя",
                 "tags": [
                     "Заявки на прогнозы"
@@ -305,6 +345,11 @@ const docTemplate = `{
         },
         "/api/forecast_applications/": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Изменяет дату начала входных измерений черновика и возвращает его",
                 "produces": [
                     "application/json"
@@ -333,6 +378,11 @@ const docTemplate = `{
         },
         "/api/forecast_applications/delete_data_type/{data_type_id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Удаляет один вид данных по его data_type_id",
                 "produces": [
                     "application/json"
@@ -362,6 +412,11 @@ const docTemplate = `{
         },
         "/api/forecast_applications/user_confirm": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Сформировать заявку пользователем",
                 "produces": [
                     "application/json"
@@ -382,6 +437,11 @@ const docTemplate = `{
         },
         "/api/forecast_applications/{application_id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Возвращает более подробную информацию о заявке",
                 "produces": [
                     "application/json"
@@ -411,6 +471,11 @@ const docTemplate = `{
         },
         "/api/forecast_applications/{application_id}/moderator_confirm": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Подтвердить или отменить заявку модератором",
                 "tags": [
                     "Заявки на прогнозы"
@@ -475,8 +540,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/loguot": {
+        "/api/user/logout": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Выход из аккаунта",
                 "consumes": [
                     "application/json"
@@ -769,6 +839,13 @@ const docTemplate = `{
                     "$ref": "#/definitions/schemes.ForecastApplicationsOutput"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

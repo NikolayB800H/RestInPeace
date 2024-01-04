@@ -18,6 +18,7 @@ import (
 // @Produce      json
 // @Success      200 {object} schemes.GetAllDataTypesResponse
 // @Router       /api/data_types [get]
+// @Security     BearerAuth
 func (app *Application) GetAllDataTypes(c *gin.Context) {
 	var request schemes.GetAllDataTypesRequest
 	if err := c.ShouldBindQuery(&request); err != nil {
@@ -58,6 +59,7 @@ func (app *Application) GetAllDataTypes(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} ds.DataTypes
 // @Router       /api/data_types/{data_type_id} [get]
+// @Security     BearerAuth
 func (app *Application) GetDataType(c *gin.Context) {
 	var request schemes.DataTypeRequest
 	if err := c.ShouldBindUri(&request); err != nil {
@@ -85,6 +87,7 @@ func (app *Application) GetDataType(c *gin.Context) {
 // @Produce      json
 // @Success      200
 // @Router       /api/data_types/{data_type_id} [delete]
+// @Security     BearerAuth
 func (app *Application) DeleteDataType(c *gin.Context) {
 	var request schemes.DataTypeRequest
 	if err := c.ShouldBindUri(&request); err != nil {
@@ -131,6 +134,7 @@ func (app *Application) DeleteDataType(c *gin.Context) {
 // @Produce      json
 // @Success      200
 // @Router       /api/data_types [post]
+// @Security     BearerAuth
 func (app *Application) AddDataType(c *gin.Context) {
 	var request schemes.AddDataTypeRequest
 	if err := c.ShouldBind(&request); err != nil {
@@ -175,6 +179,7 @@ func (app *Application) AddDataType(c *gin.Context) {
 // @Produce      json
 // @Success      200
 // @Router       /api/data_types/{data_type_id} [put]
+// @Security     BearerAuth
 func (app *Application) ChangeDataType(c *gin.Context) {
 	var request schemes.ChangeDataTypeRequest
 	if err := c.ShouldBindUri(&request); err != nil {
@@ -241,6 +246,7 @@ func (app *Application) ChangeDataType(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} schemes.AllDataTypesResponse
 // @Router       /api/data_types/{data_type_id} [post]
+// @Security     BearerAuth
 func (app *Application) AddToForecastApplications(c *gin.Context) {
 	var request schemes.AddToForecastApplicationsRequest
 	if err := c.ShouldBindUri(&request.URI); err != nil {
@@ -307,6 +313,7 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} schemes.AllForecastApplicationssResponse
 // @Router       /api/forecast_applications [get]
+// @Security     BearerAuth
 func (app *Application) GetAllForecastApplications(c *gin.Context) {
 	var request schemes.GetAllForecastApplicationsRequest
 	var err error
@@ -344,6 +351,7 @@ func (app *Application) GetAllForecastApplications(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} schemes.ForecastApplicationsResponse
 // @Router       /api/forecast_applications/{application_id} [get]
+// @Security     BearerAuth
 func (app *Application) GetForecastApplication(c *gin.Context) {
 	var request schemes.ForecastApplicationRequest
 	var err error
@@ -384,6 +392,7 @@ func (app *Application) GetForecastApplication(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} schemes.UpdateForecastApplicationsResponse
 // @Router       /api/forecast_applications/ [put]
+// @Security     BearerAuth
 func (app *Application) UpdateForecastApplication(c *gin.Context) {
 	var request schemes.UpdateForecastApplicationRequest
 	var err error
@@ -417,6 +426,7 @@ func (app *Application) UpdateForecastApplication(c *gin.Context) {
 // @Tags         Заявки на прогнозы
 // @Success      200
 // @Router       /api/forecast_applications [delete]
+// @Security     BearerAuth
 func (app *Application) DeleteForecastApplication(c *gin.Context) {
 	var err error
 	var application *ds.ForecastApplications
@@ -446,7 +456,8 @@ func (app *Application) DeleteForecastApplication(c *gin.Context) {
 // @Param        data_type_id path string true "уникальный идентификатор вида данных"
 // @Produce      json
 // @Success      200 {object} schemes.AllDataTypesResponse
-// @Router       /api/forecast_applications/delete_data_type/{data_type_id} [delete]
+// @Router       /api/forecast_applications/delete_data_type/{data_type_id} [delete]'
+// @Security     BearerAuth
 func (app *Application) DeleteFromForecastApplications(c *gin.Context) {
 	var request schemes.DeleteFromForecastApplicationsRequest
 	var err error
@@ -491,6 +502,7 @@ func (app *Application) DeleteFromForecastApplications(c *gin.Context) {
 // @Produce      json
 // @Success      200 {object} schemes.UpdateForecastApplicationsResponse
 // @Router       /api/forecast_applications/user_confirm [put]
+// @Security     BearerAuth
 func (app *Application) UserConfirm(c *gin.Context) {
 	userId := getUserId(c)
 	application, err := app.repo.GetDraftForecastApplication(userId)
@@ -528,6 +540,7 @@ func (app *Application) UserConfirm(c *gin.Context) {
 // @Param        status         query string false "статус заявки"
 // @Success      200 {object} schemes.UpdateForecastApplicationsResponse
 // @Router       /api/forecast_applications/{application_id}/moderator_confirm [put]
+// @Security     BearerAuth
 func (app *Application) ModeratorConfirm(c *gin.Context) {
 	var request schemes.ModeratorConfirmRequest
 	if err := c.ShouldBindUri(&request.URI); err != nil {

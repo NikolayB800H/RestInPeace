@@ -34,6 +34,10 @@ import (
 // @host 0.0.0.0:8084
 // @schemes https http
 // @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	app, err := app.New()
 	if err != nil {

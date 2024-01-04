@@ -65,7 +65,7 @@ func (app *Application) Register(c *gin.Context) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: &jwt.NumericDate{time.Now().Add(JWTConfig.ExpiresIn)},
 			IssuedAt:  &jwt.NumericDate{time.Now()},
-			Issuer:    "admin",
+			//Issuer:    "admin",
 		},
 		UserUUID: user.UserId,
 		Role:     user.Role,
@@ -121,7 +121,7 @@ func (app *Application) Login(c *gin.Context) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: &jwt.NumericDate{time.Now().Add(JWTConfig.ExpiresIn)},
 			IssuedAt:  &jwt.NumericDate{time.Now()},
-			Issuer:    "admin",
+			//Issuer:    "admin",
 		},
 		UserUUID: user.UserId,
 		Role:     user.Role,
@@ -151,7 +151,8 @@ func (app *Application) Login(c *gin.Context) {
 // @Accept		json
 // @Produce		json
 // @Success		200
-// @Router		/api/user/loguot [post]
+// @Router		/api/user/logout [post]
+// @Security    BearerAuth
 func (app *Application) Logout(c *gin.Context) {
 	jwtStr := c.GetHeader("Authorization")
 	if !strings.HasPrefix(jwtStr, jwtPrefix) {
