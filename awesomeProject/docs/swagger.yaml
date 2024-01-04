@@ -164,7 +164,7 @@ definitions:
       application:
         $ref: '#/definitions/schemes.ForecastApplicationsOutput'
     type: object
-host: 127.0.0.1
+host: 0.0.0.0:8084
 info:
   contact:
     email: gorkunovnm@gmail.com

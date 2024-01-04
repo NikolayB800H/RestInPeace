@@ -66,7 +66,8 @@ func (app *Application) Run() {
 			u.POST("/logout", app.Logout)
 		}
 	}
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) // http://0.0.0.0:8084/swagger/index.html
+	// !АХТУНГ! Никакого https!!!
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler)) // http://0.0.0.0:8084/swagger/index.html ~/go/bin/swag init -g cmd/server/main.go
 	r.Static("/image", "./resources")
 	r.Static("/styles", "styles")
 	r.Run(fmt.Sprintf("%s:%d", app.config.ServiceHost, app.config.ServicePort)) // 0.0.0.0:8084 по умолчанию

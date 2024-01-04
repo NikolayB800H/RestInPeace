@@ -31,10 +31,9 @@ import (
 
 // @license.name AS IS (NO WARRANTY)
 
-// @host 127.0.0.1
+// @host 0.0.0.0:8084
 // @schemes https http
 // @BasePath /
-
 func main() {
 	app, err := app.New()
 	if err != nil {
