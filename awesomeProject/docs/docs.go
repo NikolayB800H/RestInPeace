@@ -219,6 +219,37 @@ const docTemplate = `{
                     }
                 }
             },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Удаляет один вид данных по его data_type_id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Виды данных"
+                ],
+                "summary": "Запросить удаление вида данных прогнозов",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "уникальный идентификатор вида данных",
+                        "name": "data_type_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/data_types/{data_type_id}/add_to_forecast_application": {
             "post": {
                 "security": [
                     {
@@ -248,35 +279,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/schemes.AllDataTypesResponse"
                         }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Удаляет один вид данных по его data_type_id",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Виды данных"
-                ],
-                "summary": "Запросить удаление вида данных прогнозов",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "уникальный идентификатор вида данных",
-                        "name": "data_type_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             }
@@ -343,39 +345,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/forecast_applications/": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Изменяет дату начала входных измерений черновика и возвращает его",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Заявки на прогнозы"
-                ],
-                "summary": "Запросить изменение черновика",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "дата начала входных измерений",
-                        "name": "input_start_date",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemes.UpdateForecastApplicationsResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/forecast_applications/delete_data_type/{data_type_id}": {
             "delete": {
                 "security": [
@@ -405,6 +374,84 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schemes.AllDataTypesResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/forecast_applications/set_input/{data_type_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Изменяет входные данные в связи ММ",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заявки на прогнозы"
+                ],
+                "summary": "Запросить изменение входных данных вида данных черновика",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "Входное значение за первый день",
+                        "name": "input_first",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Входное значение за второй день",
+                        "name": "input_second",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Входное значение за третий день",
+                        "name": "input_third",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/forecast_applications/update": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Изменяет дату начала входных измерений черновика и возвращает его",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заявки на прогнозы"
+                ],
+                "summary": "Запросить изменение черновика",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "дата начала входных измерений",
+                        "name": "input_start_date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemes.UpdateForecastApplicationsResponse"
                         }
                     }
                 }
@@ -506,6 +553,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/forecast_applications/{application_id}/set_output/{data_type_id}": {
+            "put": {
+                "description": "Изменяет выходные данные в связи ММ",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заявки на прогнозы"
+                ],
+                "summary": "Запросить изменение выходных данных вида данных черновика",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "Ответ",
+                        "name": "output",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/user/login": {
             "post": {
                 "description": "Авторизует пользователя по логиню, паролю и отдаёт jwt токен для дальнейших запросов",
@@ -541,7 +614,7 @@ const docTemplate = `{
             }
         },
         "/api/user/logout": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []

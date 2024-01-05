@@ -274,26 +274,6 @@ paths:
       summary: Запросить один вид данных прогнозов
       tags:
       - Виды данных
-    post:
-      description: Добавляет данный вид данных в черновик заявки
-      parameters:
-      - description: уникальный идентификатор вида данных
-        in: path
-        name: data_type_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemes.AllDataTypesResponse'
-      security:
-      - BearerAuth: []
-      summary: Запросить добавление вида данных в заявку на прогноз
-      tags:
-      - Виды данных
     put:
       consumes:
       - multipart/form-data
@@ -343,6 +323,27 @@ paths:
       summary: Запросить изменение вида данных прогнозов
       tags:
       - Виды данных
+  /api/data_types/{data_type_id}/add_to_forecast_application:
+    post:
+      description: Добавляет данный вид данных в черновик заявки
+      parameters:
+      - description: уникальный идентификатор вида данных
+        in: path
+        name: data_type_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.AllDataTypesResponse'
+      security:
+      - BearerAuth: []
+      summary: Запросить добавление вида данных в заявку на прогноз
+      tags:
+      - Виды данных
   /api/forecast_applications:
     delete:
       description: Удаляет черновую заявку пользователя
@@ -379,26 +380,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Запросить все заявки на прогнозы
-      tags:
-      - Заявки на прогнозы
-  /api/forecast_applications/:
-    put:
-      description: Изменяет дату начала входных измерений черновика и возвращает его
-      parameters:
-      - description: дата начала входных измерений
-        in: query
-        name: input_start_date
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
-      security:
-      - BearerAuth: []
-      summary: Запросить изменение черновика
       tags:
       - Заявки на прогнозы
   /api/forecast_applications/{application_id}:
@@ -445,6 +426,23 @@ paths:
       summary: Подтвердить заявку
       tags:
       - Заявки на прогнозы
+  /api/forecast_applications/{application_id}/set_output/{data_type_id}:
+    put:
+      description: Изменяет выходные данные в связи ММ
+      parameters:
+      - description: Ответ
+        in: formData
+        name: output
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Запросить изменение выходных данных вида данных черновика
+      tags:
+      - Заявки на прогнозы
   /api/forecast_applications/delete_data_type/{data_type_id}:
     delete:
       description: Удаляет один вид данных по его data_type_id
@@ -464,6 +462,55 @@ paths:
       security:
       - BearerAuth: []
       summary: Запросить удаление вида данных из черновика заявки
+      tags:
+      - Заявки на прогнозы
+  /api/forecast_applications/set_input/{data_type_id}:
+    put:
+      description: Изменяет входные данные в связи ММ
+      parameters:
+      - description: Входное значение за первый день
+        in: formData
+        name: input_first
+        required: true
+        type: number
+      - description: Входное значение за второй день
+        in: formData
+        name: input_second
+        required: true
+        type: number
+      - description: Входное значение за третий день
+        in: formData
+        name: input_third
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Запросить изменение входных данных вида данных черновика
+      tags:
+      - Заявки на прогнозы
+  /api/forecast_applications/update:
+    put:
+      description: Изменяет дату начала входных измерений черновика и возвращает его
+      parameters:
+      - description: дата начала входных измерений
+        in: query
+        name: input_start_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
+      security:
+      - BearerAuth: []
+      summary: Запросить изменение черновика
       tags:
       - Заявки на прогнозы
   /api/forecast_applications/user_confirm:
@@ -505,7 +552,7 @@ paths:
       tags:
       - Авторизация
   /api/user/logout:
-    post:
+    get:
       consumes:
       - application/json
       description: Выход из аккаунта

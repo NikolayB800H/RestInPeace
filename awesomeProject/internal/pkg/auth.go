@@ -151,7 +151,7 @@ func (app *Application) Login(c *gin.Context) {
 // @Accept		json
 // @Produce		json
 // @Success		200
-// @Router		/api/user/logout [post]
+// @Router		/api/user/logout [get]
 // @Security    BearerAuth
 func (app *Application) Logout(c *gin.Context) {
 	jwtStr := c.GetHeader("Authorization")

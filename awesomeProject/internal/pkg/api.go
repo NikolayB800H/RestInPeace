@@ -245,7 +245,7 @@ func (app *Application) ChangeDataType(c *gin.Context) {
 // @Param        data_type_id path string true "уникальный идентификатор вида данных"
 // @Produce      json
 // @Success      200 {object} schemes.AllDataTypesResponse
-// @Router       /api/data_types/{data_type_id} [post]
+// @Router       /api/data_types/{data_type_id}/add_to_forecast_application [post]
 // @Security     BearerAuth
 func (app *Application) AddToForecastApplications(c *gin.Context) {
 	var request schemes.AddToForecastApplicationsRequest
@@ -391,7 +391,7 @@ func (app *Application) GetForecastApplication(c *gin.Context) {
 // @Param        input_start_date query string false "дата начала входных измерений"
 // @Produce      json
 // @Success      200 {object} schemes.UpdateForecastApplicationsResponse
-// @Router       /api/forecast_applications/ [put]
+// @Router       /api/forecast_applications/update [put]
 // @Security     BearerAuth
 func (app *Application) UpdateForecastApplication(c *gin.Context) {
 	var request schemes.UpdateForecastApplicationRequest
@@ -590,6 +590,14 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 	c.JSON(http.StatusOK, schemes.UpdateForecastApplicationsResponse{ForecastApplications: schemes.ConvertForecastApplications(application)})
 }
 
+// SetOutput godoc
+// @Summary      Запросить изменение выходных данных вида данных черновика
+// @Description  Изменяет выходные данные в связи ММ
+// @Tags         Заявки на прогнозы
+// @Param        output formData number true "Ответ"
+// @Produce      json
+// @Success      200
+// @Router       /api/forecast_applications/{application_id}/set_output/{data_type_id} [put]
 func (app *Application) SetOutput(c *gin.Context) {
 	var request schemes.SetOutputRequest
 	if err := c.ShouldBindUri(&request.URI); err != nil {
@@ -609,6 +617,17 @@ func (app *Application) SetOutput(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// SetInput godoc
+// @Summary      Запросить изменение входных данных вида данных черновика
+// @Description  Изменяет входные данные в связи ММ
+// @Tags         Заявки на прогнозы
+// @Param        input_first  formData number true "Входное значение за первый день"
+// @Param        input_second formData number true "Входное значение за второй день"
+// @Param        input_third  formData number true "Входное значение за третий день"
+// @Produce      json
+// @Success      200
+// @Router       /api/forecast_applications/set_input/{data_type_id} [put]
+// @Security     BearerAuth
 func (app *Application) SetInput(c *gin.Context) {
 	var request schemes.SetInputRequest
 	if err := c.ShouldBind(&request); err != nil {
