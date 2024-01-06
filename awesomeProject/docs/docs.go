@@ -396,6 +396,13 @@ const docTemplate = `{
                 "summary": "Запросить изменение входных данных вида данных черновика",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "уникальный идентификатор вида данных",
+                        "name": "data_type_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "type": "number",
                         "description": "Входное значение за первый день",
                         "name": "input_first",

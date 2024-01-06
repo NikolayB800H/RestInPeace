@@ -468,6 +468,11 @@ paths:
     put:
       description: Изменяет входные данные в связи ММ
       parameters:
+      - description: уникальный идентификатор вида данных
+        in: path
+        name: data_type_id
+        required: true
+        type: string
       - description: Входное значение за первый день
         in: formData
         name: input_first

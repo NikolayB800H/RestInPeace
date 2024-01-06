@@ -3,14 +3,17 @@ package app
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 
 	"mime/multipart"
 
 	"awesomeProject/internal/app/role"
+	"awesomeProject/internal/schemes"
 	"crypto/sha1"
 	"encoding/hex"
+	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
@@ -41,7 +44,7 @@ func (app *Application) uploadImage(c *gin.Context, image *multipart.FileHeader,
 
 func (app *Application) deleteImage(c *gin.Context, UUID string) error {
 	imageName := UUID + ".jpg"
-	fmt.Println(imageName)
+	//log.Println(imageName)
 	err := app.minioClient.RemoveObject(c, app.config.Minio.BucketName, imageName, minio.RemoveObjectOptions{})
 	if err != nil {
 		return err
@@ -65,11 +68,32 @@ func generateHashString(s string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func calculateRequest(forecast_application_id string) error {
+func (app *Application) calculateRequest(forecast_application_id string) error {
 	url := "http://localhost:8000/api/calculate/"
-	payload := fmt.Sprintf(`{"forecast_application_id": "%s"}`, forecast_application_id)
+	//var data schemes.CalculateAsyncReq
+	data := &schemes.CalculateAsyncReq{
+		ApplicationId: forecast_application_id,
+		AllInputs:     []schemes.DataTypeInput{},
+	}
+	dataTypes, err := app.repo.GetConnectorAppsTypesExtended(forecast_application_id) //!!!
+	if err != nil {
+		return err
+	}
+	for i, input := range dataTypes {
+		log.Println(i, input)
+		data.AllInputs = append(data.AllInputs, schemes.DataTypeInput{
+			DataTypeId:  input.DataTypeId,
+			InputFirst:  input.InputFirst,
+			InputSecond: input.InputSecond,
+			InputThird:  input.InputThird,
+		})
+	}
+	payload, err := json.Marshal(data) //fmt.Sprintf(`{"application_id": "%s"}`, forecast_application_id)
+	if err != nil {
+		return err
+	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewBufferString(payload))
+	resp, err := http.Post(url, "application/json", bytes.NewReader(payload)) //bytes.NewBufferString(payload))
 	if err != nil {
 		return err
 	}

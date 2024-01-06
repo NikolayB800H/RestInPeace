@@ -95,10 +95,28 @@ type RegisterReq struct {
 	Password string `form:"password" binding:"required,max=256"`
 }
 
+type DataTypeOutput struct {
+	DataTypeId string  `json:"data_type_id" form:"data_type_id" binding:"required"`
+	Output     float64 `json:"output" form:"output" binding:"required"`
+}
+
 type CalculateReq struct {
 	URI struct {
-		ApplicationId string `uri:"id" binding:"required,uuid"`
+		ApplicationId string `uri:"application_id" binding:"required,uuid"`
 	}
-	CalculateStatus *bool  `json:"calculate_status" form:"calculate_status" binding:"required"`
-	Token           string `json:"token" form:"token" binding:"required"`
+	CalculateStatus *bool            `json:"calculate_status" form:"calculate_status" binding:"required"`
+	Token           string           `json:"token" form:"token" binding:"required"`
+	AllOutputs      []DataTypeOutput `json:"all_outputs" form:"all_outputs" binding:"required"`
+}
+
+type DataTypeInput struct {
+	DataTypeId  string  `json:"data_type_id" form:"data_type_id" binding:"required"`
+	InputFirst  float64 `form:"input_first" json:"input_first" binding:"required"`
+	InputSecond float64 `form:"input_second" json:"input_second" binding:"required"`
+	InputThird  float64 `form:"input_third" json:"input_third" binding:"required"`
+}
+
+type CalculateAsyncReq struct {
+	ApplicationId string          `json:"application_id" form:"application_id" binding:"required"`
+	AllInputs     []DataTypeInput `json:"all_inputs" form:"all_inputs" binding:"required"`
 }

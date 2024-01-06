@@ -5,8 +5,11 @@ import (
 	"awesomeProject/internal/app/role"
 	"awesomeProject/internal/schemes"
 	"fmt"
+	"log"
 	"net/http"
+	"reflect"
 	"time"
+	"unsafe"
 
 	"github.com/gin-gonic/gin"
 )
@@ -324,7 +327,7 @@ func (app *Application) GetAllForecastApplications(c *gin.Context) {
 
 	userId := getUserId(c)
 	userRole := getUserRole(c)
-	fmt.Println(userId, userRole)
+	//log.Println(userId, userRole)
 	var applications []ds.ForecastApplications
 	if userRole == role.Client {
 		applications, err = app.repo.GetAllForecastApplications(&userId, request.FormationDateStart, request.FormationDateEnd, request.Status)
@@ -514,7 +517,7 @@ func (app *Application) UserConfirm(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
 		return
 	}
-	if err := calculateRequest(application.ApplicationId); err != nil {
+	if err := app.calculateRequest(application.ApplicationId); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf(`сервис расчета прогноза не доступен: {%s}`, err))
 		return
 	}
@@ -621,6 +624,7 @@ func (app *Application) SetOutput(c *gin.Context) {
 // @Summary      Запросить изменение входных данных вида данных черновика
 // @Description  Изменяет входные данные в связи ММ
 // @Tags         Заявки на прогнозы
+// @Param        data_type_id path string true "уникальный идентификатор вида данных"
 // @Param        input_first  formData number true "Входное значение за первый день"
 // @Param        input_second formData number true "Входное значение за второй день"
 // @Param        input_third  formData number true "Входное значение за третий день"
@@ -630,6 +634,10 @@ func (app *Application) SetOutput(c *gin.Context) {
 // @Security     BearerAuth
 func (app *Application) SetInput(c *gin.Context) {
 	var request schemes.SetInputRequest
+	if err := c.ShouldBindUri(&request.URI); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 	if err := c.ShouldBind(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -653,17 +661,46 @@ func (app *Application) SetInput(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func printContextInternals(ctx interface{}, inner bool) {
+	contextValues := reflect.ValueOf(ctx).Elem()
+	contextKeys := reflect.TypeOf(ctx).Elem()
+
+	if !inner {
+		fmt.Printf("\nFields for %s.%s\n", contextKeys.PkgPath(), contextKeys.Name())
+	}
+
+	if contextKeys.Kind() == reflect.Struct {
+		for i := 0; i < contextValues.NumField(); i++ {
+			reflectValue := contextValues.Field(i)
+			reflectValue = reflect.NewAt(reflectValue.Type(), unsafe.Pointer(reflectValue.UnsafeAddr())).Elem()
+
+			reflectField := contextKeys.Field(i)
+
+			if reflectField.Name == "Context" {
+				printContextInternals(reflectValue.Interface(), true)
+			} else {
+				fmt.Printf("field name: %+v\n", reflectField.Name)
+				fmt.Printf("value: %+v\n", reflectValue.Interface())
+			}
+		}
+	} else {
+		fmt.Printf("context is empty (int)\n")
+	}
+}
 func (app *Application) Calculate(c *gin.Context) {
+	log.Println("BBBBBBBB\nBBBBBBBB\nBBBBBBBB\n")
 	var request schemes.CalculateReq
 	if err := c.ShouldBindUri(&request.URI); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	log.Println("CCCCCCCC\nCCCCCCCC\nCCCCCCCC\n")
+	//printContextInternals(c, false)
 	if err := c.ShouldBind(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
+	log.Println("AAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAA\n", request)
 	if request.Token != app.config.Token {
 		c.AbortWithStatus(http.StatusForbidden)
 		return
@@ -678,10 +715,16 @@ func (app *Application) Calculate(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("перевозка не найдена"))
 		return
 	}
-
 	var calculateStatus string
 	if *request.CalculateStatus {
 		calculateStatus = ds.CalculateCompleted
+		for i, output := range request.AllOutputs {
+			log.Println(i, output)
+			if err := app.repo.SetOutputConnectorAppsTypes(request.URI.ApplicationId, output.DataTypeId, output.Output); err != nil {
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+		}
 	} else {
 		calculateStatus = ds.CalculateFailed
 	}
