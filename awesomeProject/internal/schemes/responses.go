@@ -78,7 +78,8 @@ type AuthResp struct {
 	ExpiresIn   time.Duration `json:"expires_in"`
 	AccessToken string        `json:"access_token"`
 	Role        role.Role     `json:"role"`
-	TokenType   string        `json:"token_type"`
+	Login       string        `json:"login"`
+	//TokenType   string        `json:"token_type"`
 }
 
 type SwaggerLoginResp struct {

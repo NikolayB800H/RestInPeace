@@ -16,6 +16,7 @@ import (
 // @Summary      Запросить все виды данных прогнозов и черновик заявки на прогноз
 // @Description  Список видов данных включает только те, что со статусом "доступен"
 // @Tags         Виды данных
+// @Param        data_type_name query string false "Название вида данных"
 // @Produce      json
 // @Success      200 {object} schemes.GetAllDataTypesResponse
 // @Router       /api/data_types [get]
@@ -412,7 +413,7 @@ func (app *Application) UpdateForecastApplication(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
 		return
 	}
-	application.InputStartDate = request.InputStartDate
+	application.InputStartDate = &request.InputStartDate
 	if app.repo.SaveForecastApplication(application); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

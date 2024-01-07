@@ -182,6 +182,11 @@ paths:
   /api/data_types:
     get:
       description: Список видов данных включает только те, что со статусом "доступен"
+      parameters:
+      - description: Название вида данных
+        in: query
+        name: data_type_name
+        type: string
       produces:
       - application/json
       responses:

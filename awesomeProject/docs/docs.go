@@ -37,6 +37,14 @@ const docTemplate = `{
                     "Виды данных"
                 ],
                 "summary": "Запросить все виды данных прогнозов и черновик заявки на прогноз",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Название вида данных",
+                        "name": "data_type_name",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -45,7 +45,7 @@ type ForecastApplications struct {
 	ApplicationCompletionDate *time.Time `gorm:"type:timestamp"`
 	CreatorId                 string     `gorm:"not null"`
 	ModeratorId               *string    `json:"-"`
-	InputStartDate            time.Time  `gorm:"not null;type:date"`
+	InputStartDate            *time.Time `gorm:"type:date"`
 
 	Moderator *Users
 	Creator   Users

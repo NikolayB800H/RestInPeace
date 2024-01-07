@@ -70,6 +70,7 @@ func (app *Application) Register(c *gin.Context) {
 		},
 		UserUUID: user.UserId,
 		Role:     user.Role,
+		Login:    user.Login,
 	})
 	if token == nil {
 		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("token is nil"))
@@ -86,7 +87,8 @@ func (app *Application) Register(c *gin.Context) {
 		ExpiresIn:   JWTConfig.ExpiresIn,
 		AccessToken: strToken,
 		Role:        user.Role,
-		TokenType:   "Bearer",
+		Login:       user.Login,
+		//TokenType:   "Bearer",
 	})
 }
 
@@ -126,6 +128,7 @@ func (app *Application) Login(c *gin.Context) {
 		},
 		UserUUID: user.UserId,
 		Role:     user.Role,
+		Login:    user.Login,
 	})
 	if token == nil {
 		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("token is nil"))
@@ -142,7 +145,8 @@ func (app *Application) Login(c *gin.Context) {
 		ExpiresIn:   JWTConfig.ExpiresIn,
 		AccessToken: strToken,
 		Role:        user.Role,
-		TokenType:   "Bearer",
+		Login:       user.Login,
+		//TokenType:   "Bearer",
 	})
 }
 
