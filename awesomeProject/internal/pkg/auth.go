@@ -55,6 +55,7 @@ func (app *Application) Register(c *gin.Context) {
 		Login:    request.Login,
 		Password: generateHashString(request.Password),
 	}
+	log.Println(user.Password)
 	if err := app.repo.AddUser(&user); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

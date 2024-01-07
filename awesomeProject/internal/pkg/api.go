@@ -7,9 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reflect"
 	"time"
-	"unsafe"
 
 	"github.com/gin-gonic/gin"
 )
@@ -518,7 +516,7 @@ func (app *Application) UserConfirm(c *gin.Context) {
 		return
 	}
 	if err := app.calculateRequest(application.ApplicationId); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf(`сервис расчета прогноза не доступен: {%s}`, err))
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -593,14 +591,14 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 	c.JSON(http.StatusOK, schemes.UpdateForecastApplicationsResponse{ForecastApplications: schemes.ConvertForecastApplications(application)})
 }
 
-// SetOutput godoc
-// @Summary      Запросить изменение выходных данных вида данных черновика
-// @Description  Изменяет выходные данные в связи ММ
-// @Tags         Заявки на прогнозы
-// @Param        output formData number true "Ответ"
-// @Produce      json
-// @Success      200
-// @Router       /api/forecast_applications/{application_id}/set_output/{data_type_id} [put]
+/* SetOutput godoc
+/ @Summary      Запросить изменение выходных данных вида данных черновика
+/ @Description  Изменяет выходные данные в связи ММ
+/ @Tags         Заявки на прогнозы
+/ @Param        output formData number true "Ответ"
+/ @Produce      json
+/ @Success      200
+/ @Router       /api/forecast_applications/{application_id}/set_output/{data_type_id} [put]
 func (app *Application) SetOutput(c *gin.Context) {
 	var request schemes.SetOutputRequest
 	if err := c.ShouldBindUri(&request.URI); err != nil {
@@ -618,7 +616,7 @@ func (app *Application) SetOutput(c *gin.Context) {
 	}
 
 	c.Status(http.StatusOK)
-}
+}*/
 
 // SetInput godoc
 // @Summary      Запросить изменение входных данных вида данных черновика
@@ -661,46 +659,48 @@ func (app *Application) SetInput(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func printContextInternals(ctx interface{}, inner bool) {
-	contextValues := reflect.ValueOf(ctx).Elem()
-	contextKeys := reflect.TypeOf(ctx).Elem()
+/*
+	func printContextInternals(ctx interface{}, inner bool) {
+		contextValues := reflect.ValueOf(ctx).Elem()
+		contextKeys := reflect.TypeOf(ctx).Elem()
 
-	if !inner {
-		fmt.Printf("\nFields for %s.%s\n", contextKeys.PkgPath(), contextKeys.Name())
-	}
-
-	if contextKeys.Kind() == reflect.Struct {
-		for i := 0; i < contextValues.NumField(); i++ {
-			reflectValue := contextValues.Field(i)
-			reflectValue = reflect.NewAt(reflectValue.Type(), unsafe.Pointer(reflectValue.UnsafeAddr())).Elem()
-
-			reflectField := contextKeys.Field(i)
-
-			if reflectField.Name == "Context" {
-				printContextInternals(reflectValue.Interface(), true)
-			} else {
-				fmt.Printf("field name: %+v\n", reflectField.Name)
-				fmt.Printf("value: %+v\n", reflectValue.Interface())
-			}
+		if !inner {
+			fmt.Printf("\nFields for %s.%s\n", contextKeys.PkgPath(), contextKeys.Name())
 		}
-	} else {
-		fmt.Printf("context is empty (int)\n")
+
+		if contextKeys.Kind() == reflect.Struct {
+			for i := 0; i < contextValues.NumField(); i++ {
+				reflectValue := contextValues.Field(i)
+				reflectValue = reflect.NewAt(reflectValue.Type(), unsafe.Pointer(reflectValue.UnsafeAddr())).Elem()
+
+				reflectField := contextKeys.Field(i)
+
+				if reflectField.Name == "Context" {
+					printContextInternals(reflectValue.Interface(), true)
+				} else {
+					fmt.Printf("field name: %+v\n", reflectField.Name)
+					fmt.Printf("value: %+v\n", reflectValue.Interface())
+				}
+			}
+		} else {
+			fmt.Printf("context is empty (int)\n")
+		}
 	}
-}
+*/
 func (app *Application) Calculate(c *gin.Context) {
-	log.Println("BBBBBBBB\nBBBBBBBB\nBBBBBBBB\n")
+	//log.Println("BBBBBBBB\nBBBBBBBB\nBBBBBBBB\n")
 	var request schemes.CalculateReq
 	if err := c.ShouldBindUri(&request.URI); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	log.Println("CCCCCCCC\nCCCCCCCC\nCCCCCCCC\n")
+	//log.Println("CCCCCCCC\nCCCCCCCC\nCCCCCCCC\n")
 	//printContextInternals(c, false)
 	if err := c.ShouldBind(&request); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	log.Println("AAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAA\n", request)
+	//log.Println("AAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAA\n", request)
 	if request.Token != app.config.Token {
 		c.AbortWithStatus(http.StatusForbidden)
 		return

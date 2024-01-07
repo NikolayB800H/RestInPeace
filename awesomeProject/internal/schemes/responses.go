@@ -38,6 +38,7 @@ type UpdateForecastApplicationsResponse struct {
 type ForecastApplicationsOutput struct {
 	ApplicationId             string  `json:"application_id"`
 	ApplicationStatus         string  `json:"application_status"` // Replace with Enum
+	CalculateStatus           *string `json:"calculate_status"`   // Replace with Enum
 	ApplicationCreationDate   string  `json:"application_creation_date"`
 	ApplicationFormationDate  *string `json:"application_formation_date"`
 	ApplicationCompletionDate *string `json:"application_completion_date"`
@@ -50,8 +51,9 @@ func ConvertForecastApplications(application *ds.ForecastApplications) ForecastA
 	output := ForecastApplicationsOutput{
 		ApplicationId:           application.ApplicationId,
 		ApplicationStatus:       application.ApplicationStatus,
+		CalculateStatus:         application.CalculateStatus,
 		ApplicationCreationDate: application.ApplicationCreationDate.Format("2006-01-02 15:04:05"),
-		InputStartDate:          application.InputStartDate.Format("2006-01-02 15:04:05"),
+		InputStartDate:          application.InputStartDate.Format("2006-01-02"),
 		Creator:                 application.Creator.Login,
 	}
 

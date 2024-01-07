@@ -558,32 +558,6 @@
                 }
             }
         },
-        "/api/forecast_applications/{application_id}/set_output/{data_type_id}": {
-            "put": {
-                "description": "Изменяет выходные данные в связи ММ",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Заявки на прогнозы"
-                ],
-                "summary": "Запросить изменение выходных данных вида данных черновика",
-                "parameters": [
-                    {
-                        "type": "number",
-                        "description": "Ответ",
-                        "name": "output",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
         "/api/user/login": {
             "post": {
                 "description": "Авторизует пользователя по логиню, паролю и отдаёт jwt токен для дальнейших запросов",
@@ -805,6 +779,10 @@
                     "type": "string"
                 },
                 "application_status": {
+                    "description": "Replace with Enum",
+                    "type": "string"
+                },
+                "calculate_status": {
                     "description": "Replace with Enum",
                     "type": "string"
                 },

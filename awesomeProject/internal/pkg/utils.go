@@ -77,28 +77,31 @@ func (app *Application) calculateRequest(forecast_application_id string) error {
 	}
 	dataTypes, err := app.repo.GetConnectorAppsTypesExtended(forecast_application_id) //!!!
 	if err != nil {
-		return err
+		return fmt.Errorf(`ошибка получения типов данных и входных значений: {%s}`, err)
 	}
 	for i, input := range dataTypes {
 		log.Println(i, input)
+		if input.InputFirst == nil || input.InputSecond == nil || input.InputThird == nil {
+			return fmt.Errorf(`входное значение в заявке №{%d} не задано`, i)
+		}
 		data.AllInputs = append(data.AllInputs, schemes.DataTypeInput{
 			DataTypeId:  input.DataTypeId,
-			InputFirst:  input.InputFirst,
-			InputSecond: input.InputSecond,
-			InputThird:  input.InputThird,
+			InputFirst:  *input.InputFirst,
+			InputSecond: *input.InputSecond,
+			InputThird:  *input.InputThird,
 		})
 	}
 	payload, err := json.Marshal(data) //fmt.Sprintf(`{"application_id": "%s"}`, forecast_application_id)
 	if err != nil {
-		return err
+		return fmt.Errorf(`формирование запроса сервису расчета прогноза провалено: {%s}`, err)
 	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewReader(payload)) //bytes.NewBufferString(payload))
 	if err != nil {
-		return err
+		return fmt.Errorf(`сервис расчета прогноза не доступен: {%s}`, err)
 	}
 	if resp.StatusCode >= 300 {
-		return fmt.Errorf(`Calculate failed with status: {%s}`, resp.Status)
+		return fmt.Errorf(`рассчёт провалился: {%s}`, resp.Status)
 	}
 	return nil
 }

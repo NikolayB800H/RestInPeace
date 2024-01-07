@@ -52,12 +52,12 @@ type ForecastApplications struct {
 }
 
 type ConnectorAppsTypes struct {
-	DataTypeId    string  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"data_type_id"`
-	ApplicationId string  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"application_id"`
-	InputFirst    float64 `gorm:"not null"`
-	InputSecond   float64 `gorm:"not null"`
-	InputThird    float64 `gorm:"not null"`
-	Output        float64
+	DataTypeId    string `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"data_type_id"`
+	ApplicationId string `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"application_id"`
+	InputFirst    *float64
+	InputSecond   *float64
+	InputThird    *float64
+	Output        *float64
 
 	DataType    *DataTypes            `gorm:"foreignKey:DataTypeId" json:"data_type"`
 	Application *ForecastApplications `gorm:"foreignKey:ApplicationId" json:"application"`
@@ -71,8 +71,8 @@ type ConnectorAppsTypesDataTypes struct {
 	Description    string  `gorm:"size:1024;not null" form:"description" json:"description" binding:"required,max=1024"`
 	Unit           string  `gorm:"size:32;not null" form:"unit" json:"unit" binding:"required,max=32"`
 	DataTypeStatus string  `gorm:"size:50;not null" form:"data_type_status" json:"data_type_status" binding:"required,max=50"` // Replace with Enum
-	InputFirst     float64 `gorm:"not null"`
-	InputSecond    float64 `gorm:"not null"`
-	InputThird     float64 `gorm:"not null"`
-	Output         float64
+	InputFirst     *float64
+	InputSecond    *float64
+	InputThird     *float64
+	Output         *float64
 } //!!!

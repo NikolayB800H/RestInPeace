@@ -91,6 +91,9 @@ definitions:
       application_status:
         description: Replace with Enum
         type: string
+      calculate_status:
+        description: Replace with Enum
+        type: string
       creator:
         type: string
       input_start_date:
@@ -424,23 +427,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Подтвердить заявку
-      tags:
-      - Заявки на прогнозы
-  /api/forecast_applications/{application_id}/set_output/{data_type_id}:
-    put:
-      description: Изменяет выходные данные в связи ММ
-      parameters:
-      - description: Ответ
-        in: formData
-        name: output
-        required: true
-        type: number
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Запросить изменение выходных данных вида данных черновика
       tags:
       - Заявки на прогнозы
   /api/forecast_applications/delete_data_type/{data_type_id}:

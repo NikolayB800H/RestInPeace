@@ -78,7 +78,7 @@ func (r *Repository) SaveDataType(dataType *ds.DataTypes) error {
 }
 
 func (r *Repository) AddToConnectorAppsTypes(applicationId string, dataTypeId string) error {
-	connector := ds.ConnectorAppsTypes{ApplicationId: applicationId, DataTypeId: dataTypeId, InputFirst: 0.0, InputSecond: 0.0, InputThird: 0.0}
+	connector := ds.ConnectorAppsTypes{ApplicationId: applicationId, DataTypeId: dataTypeId /*, InputFirst: 0.0, InputSecond: 0.0, InputThird: 0.0*/}
 	err := r.db.Create(&connector).Error
 	if err != nil {
 		return err
@@ -196,7 +196,7 @@ func (r *Repository) DeleteFromConnectorAppsTypes(applicationId, dataTypeId stri
 }
 
 func (r *Repository) SetOutputConnectorAppsTypes(applicationId string, dataTypeId string, output float64) error {
-	err := r.db.Model(ds.ConnectorAppsTypes{}).Where("application_id = ? AND data_type_id = ?", applicationId, dataTypeId).Updates(ds.ConnectorAppsTypes{Output: output}).Error
+	err := r.db.Model(ds.ConnectorAppsTypes{}).Where("application_id = ? AND data_type_id = ?", applicationId, dataTypeId).Updates(ds.ConnectorAppsTypes{Output: &output}).Error
 	if err != nil {
 		return err
 	}
@@ -204,7 +204,7 @@ func (r *Repository) SetOutputConnectorAppsTypes(applicationId string, dataTypeI
 }
 
 func (r *Repository) SetInputConnectorAppsTypes(applicationId string, dataTypeId string, inputFirst float64, inputSecond float64, inputThird float64) error {
-	err := r.db.Model(ds.ConnectorAppsTypes{}).Where("application_id = ? AND data_type_id = ?", applicationId, dataTypeId).Updates(ds.ConnectorAppsTypes{InputFirst: inputFirst, InputSecond: inputSecond, InputThird: inputThird}).Error
+	err := r.db.Model(ds.ConnectorAppsTypes{}).Where("application_id = ? AND data_type_id = ?", applicationId, dataTypeId).Updates(ds.ConnectorAppsTypes{InputFirst: &inputFirst, InputSecond: &inputSecond, InputThird: &inputThird}).Error
 	if err != nil {
 		return err
 	}
