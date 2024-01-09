@@ -310,7 +310,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "статус заявки",
-                        "name": "status",
+                        "name": "application_status",
                         "in": "query"
                     },
                     {

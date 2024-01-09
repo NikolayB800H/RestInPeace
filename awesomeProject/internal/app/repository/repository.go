@@ -88,7 +88,6 @@ func (r *Repository) AddToConnectorAppsTypes(applicationId string, dataTypeId st
 
 func (r *Repository) GetAllForecastApplications(creatorId *string, formationDateStart, formationDateEnd *time.Time, status string) ([]ds.ForecastApplications, error) {
 	var forecastApplications []ds.ForecastApplications
-
 	query := r.db.
 		Preload("Creator").
 		Preload("Moderator").

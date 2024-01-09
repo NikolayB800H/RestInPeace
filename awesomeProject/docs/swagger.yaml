@@ -372,7 +372,7 @@ paths:
       parameters:
       - description: статус заявки
         in: query
-        name: status
+        name: application_status
         type: string
       - description: начальная дата формирования
         in: query

@@ -309,7 +309,7 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 // @Summary      Запросить все заявки на прогнозы
 // @Description  Возвращает все заявки с фильтрацией по статусу и дате формирования
 // @Tags         Заявки на прогнозы
-// @Param        status               query string false "статус заявки"
+// @Param        application_status   query string false "статус заявки"
 // @Param        formation_date_start query string false "начальная дата формирования"
 // @Param        formation_date_end   query string false "конечная дата формирвания"
 // @Produce      json
@@ -326,7 +326,6 @@ func (app *Application) GetAllForecastApplications(c *gin.Context) {
 
 	userId := getUserId(c)
 	userRole := getUserRole(c)
-	//log.Println(userId, userRole)
 	var applications []ds.ForecastApplications
 	if userRole == role.Client {
 		applications, err = app.repo.GetAllForecastApplications(&userId, request.FormationDateStart, request.FormationDateEnd, request.Status)
