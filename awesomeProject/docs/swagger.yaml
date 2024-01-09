@@ -298,32 +298,27 @@ paths:
         type: string
       - description: Изображение вида данных
         in: formData
-        name: image_path
+        name: image
         type: file
       - description: Название вида данных
         in: formData
         name: data_type_name
-        required: true
         type: string
       - description: Погрешность предсказания вида данных
         in: formData
         name: precision
-        required: true
         type: number
       - description: Описание вида данных
         in: formData
         name: description
-        required: true
         type: string
       - description: Единица измерения вида данных
         in: formData
         name: unit
-        required: true
         type: string
       - description: Статус вида данных
         in: formData
         name: data_type_status
-        required: true
         type: string
       produces:
       - application/json

@@ -180,43 +180,38 @@
                     {
                         "type": "file",
                         "description": "Изображение вида данных",
-                        "name": "image_path",
+                        "name": "image",
                         "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "Название вида данных",
                         "name": "data_type_name",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "number",
                         "description": "Погрешность предсказания вида данных",
                         "name": "precision",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "Описание вида данных",
                         "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "Единица измерения вида данных",
                         "name": "unit",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "Статус вида данных",
                         "name": "data_type_status",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {

@@ -225,9 +225,9 @@ func (r *Repository) GetUserByLogin(login string) (*ds.Users, error) {
 	return user, nil
 }
 
-func (r *Repository) GetUserById(uuid string) (*ds.Users, error) {
+func (r *Repository) GetUserById(user_id string) (*ds.Users, error) {
 	user := &ds.Users{}
-	if err := r.db.Where("uuid = ?", uuid).First(user).Error; err != nil {
+	if err := r.db.Where("user_id = ?", user_id).First(user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

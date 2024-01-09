@@ -172,12 +172,12 @@ func (app *Application) AddDataType(c *gin.Context) {
 // @Tags         Виды данных
 // @Accept       mpfd
 // @Param        data_type_id     path     string true  "уникальный идентификатор вида данных"
-// @Param        image_path       formData file   false "Изображение вида данных"
-// @Param        data_type_name   formData string true  "Название вида данных"
-// @Param        precision        formData number true  "Погрешность предсказания вида данных"
-// @Param        description      formData string true  "Описание вида данных"
-// @Param        unit             formData string true  "Единица измерения вида данных"
-// @Param        data_type_status formData string true  "Статус вида данных"
+// @Param        image            formData file   false "Изображение вида данных"
+// @Param        data_type_name   formData string false  "Название вида данных"
+// @Param        precision        formData number false  "Погрешность предсказания вида данных"
+// @Param        description      formData string false  "Описание вида данных"
+// @Param        unit             formData string false  "Единица измерения вида данных"
+// @Param        data_type_status formData string false  "Статус вида данных"
 // @Produce      json
 // @Success      200
 // @Router       /api/data_types/{data_type_id} [put]
@@ -551,13 +551,12 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-
 	if request.Status != ds.COMPELTED_APPLICATION && request.Status != ds.REJECTED_APPLICATION {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("нельзя изменить статус на %s", request.Status))
 		return
 	}
 	userId := getUserId(c)
-	application, err := app.repo.GetForecastApplicationById(request.URI.ApplicationId, &userId)
+	application, err := app.repo.GetForecastApplicationById(request.URI.ApplicationId, nil)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -589,33 +588,6 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, schemes.UpdateForecastApplicationsResponse{ForecastApplications: schemes.ConvertForecastApplications(application)})
 }
-
-/* SetOutput godoc
-/ @Summary      Запросить изменение выходных данных вида данных черновика
-/ @Description  Изменяет выходные данные в связи ММ
-/ @Tags         Заявки на прогнозы
-/ @Param        output formData number true "Ответ"
-/ @Produce      json
-/ @Success      200
-/ @Router       /api/forecast_applications/{application_id}/set_output/{data_type_id} [put]
-func (app *Application) SetOutput(c *gin.Context) {
-	var request schemes.SetOutputRequest
-	if err := c.ShouldBindUri(&request.URI); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-	if err := c.ShouldBind(&request); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	if err := app.repo.SetOutputConnectorAppsTypes(request.URI.ApplicationId, request.URI.DataTypeId, request.Output); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.Status(http.StatusOK)
-}*/
 
 // SetInput godoc
 // @Summary      Запросить изменение входных данных вида данных черновика

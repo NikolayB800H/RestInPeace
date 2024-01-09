@@ -37,7 +37,7 @@ const CalculateFailed string = "прогноз отменён"
 const CalculateStarted string = "идёт рассчёт прогноза..."
 
 type ForecastApplications struct {
-	ApplicationId             string     `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	ApplicationId             string     `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"application_id"`
 	ApplicationStatus         string     `gorm:"size:50;not null"` // Replace with Enum
 	CalculateStatus           *string    `gorm:"size:50"`
 	ApplicationCreationDate   time.Time  `gorm:"not null;type:timestamp"`

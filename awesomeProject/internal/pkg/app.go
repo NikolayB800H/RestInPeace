@@ -80,13 +80,12 @@ func (app *Application) Run() {
 		// Заявления (заявки на предсказания)
 		f := api.Group("/forecast_applications")
 		{
-			f.GET("", app.WithAuthCheck(role.Client, role.Moderator), app.GetAllForecastApplications)             // Список (отфильтровать по дате формирования и статусу)
-			f.GET("/:application_id", app.WithAuthCheck(role.Client, role.Moderator), app.GetForecastApplication) // Одно заявление
-			f.PUT("/update", app.WithAuthCheck(role.Client, role.Moderator), app.UpdateForecastApplication)       // Изменение (изменение/добавление начальной даты)
-			f.DELETE("", app.WithAuthCheck(role.Client, role.Moderator), app.DeleteForecastApplication)           // Удаление
-			f.PUT("/user_confirm", app.WithAuthCheck(role.Client, role.Moderator), app.UserConfirm)               // Сформировать создателем
-			f.PUT("/:application_id/moderator_confirm", app.WithAuthCheck(role.Moderator), app.ModeratorConfirm)  // Завершить или отклонить модератором
-			//f.PUT("/:application_id/set_output/:data_type_id", app.SetOutput)                                                                                   // Изменение выходных данных
+			f.GET("", app.WithAuthCheck(role.Client, role.Moderator), app.GetAllForecastApplications)                                       // Список (отфильтровать по дате формирования и статусу)
+			f.GET("/:application_id", app.WithAuthCheck(role.Client, role.Moderator), app.GetForecastApplication)                           // Одно заявление
+			f.PUT("/update", app.WithAuthCheck(role.Client, role.Moderator), app.UpdateForecastApplication)                                 // Изменение (изменение/добавление начальной даты)
+			f.DELETE("", app.WithAuthCheck(role.Client, role.Moderator), app.DeleteForecastApplication)                                     // Удаление
+			f.PUT("/user_confirm", app.WithAuthCheck(role.Client, role.Moderator), app.UserConfirm)                                         // Сформировать создателем
+			f.PUT("/:application_id/moderator_confirm", app.WithAuthCheck(role.Moderator), app.ModeratorConfirm)                            // Завершить или отклонить модератором
 			f.DELETE("/delete_data_type/:data_type_id", app.WithAuthCheck(role.Client, role.Moderator), app.DeleteFromForecastApplications) // Изменение (удаление услуг)
 			f.PUT("/set_input/:data_type_id", app.WithAuthCheck(role.Client, role.Moderator), app.SetInput)                                 // Изменение входных данных
 			f.PUT("/:application_id/calculate", app.Calculate)

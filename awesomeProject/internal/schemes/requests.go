@@ -21,7 +21,7 @@ type AddDataTypeRequest struct {
 
 type ChangeDataTypeRequest struct {
 	DataTypeId     string                `uri:"data_type_id" binding:"required,uuid"`
-	ImagePath      *multipart.FileHeader `form:"image_path" json:"image_path"`
+	ImagePath      *multipart.FileHeader `form:"image" json:"image"`
 	DataTypeName   *string               `form:"data_type_name" json:"data_type_name" binding:"omitempty,max=128"`
 	Precision      *float64              `form:"precision" json:"precision"`
 	Description    *string               `form:"description" json:"description" binding:"omitempty,max=1024"`
