@@ -377,7 +377,6 @@ func (app *Application) GetForecastApplication(c *gin.Context) {
 		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
 		return
 	}
-
 	dataTypes, err := app.repo.GetConnectorAppsTypesExtended(request.ApplicationId) //!!!
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -483,12 +482,12 @@ func (app *Application) DeleteFromForecastApplications(c *gin.Context) {
 		return
 	}
 
-	if err := app.repo.DeleteFromConnectorAppsTypes(request.ApplicationId, request.DataTypeId); err != nil {
+	if err := app.repo.DeleteFromConnectorAppsTypes(application.ApplicationId, request.DataTypeId); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	dataTypes, err := app.repo.GetConnectorAppsTypes(request.ApplicationId)
+	dataTypes, err := app.repo.GetConnectorAppsTypes(application.ApplicationId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

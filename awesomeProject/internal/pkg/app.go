@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -51,10 +52,18 @@ func ginBodyLogMiddleware(c *gin.Context) {
 	}
 }
 
+func createOrUpdateInfluencer(c *gin.Context) {
+	body, _ := io.ReadAll(c.Request.Body)
+	println(string(body))
+
+	c.Request.Body = io.NopCloser(bytes.NewReader(body))
+}
+
 func (app *Application) Run() {
 	r := gin.Default()
 	r.Use(ErrorHandler())
 	r.Use(ginBodyLogMiddleware)
+	r.Use(createOrUpdateInfluencer)
 
 	api := r.Group("/api")
 	{
@@ -78,8 +87,8 @@ func (app *Application) Run() {
 			f.PUT("/user_confirm", app.WithAuthCheck(role.Client, role.Moderator), app.UserConfirm)               // Сформировать создателем
 			f.PUT("/:application_id/moderator_confirm", app.WithAuthCheck(role.Moderator), app.ModeratorConfirm)  // Завершить или отклонить модератором
 			//f.PUT("/:application_id/set_output/:data_type_id", app.SetOutput)                                                                                   // Изменение выходных данных
-			f.DELETE("/delete_data_type/:data_type_id", app.WithAuthCheck(role.NotAuthorized, role.Client, role.Moderator), app.DeleteFromForecastApplications) // Изменение (удаление услуг)
-			f.PUT("/set_input/:data_type_id", app.WithAuthCheck(role.Client, role.Moderator), app.SetInput)                                                     // Изменение входных данных
+			f.DELETE("/delete_data_type/:data_type_id", app.WithAuthCheck(role.Client, role.Moderator), app.DeleteFromForecastApplications) // Изменение (удаление услуг)
+			f.PUT("/set_input/:data_type_id", app.WithAuthCheck(role.Client, role.Moderator), app.SetInput)                                 // Изменение входных данных
 			f.PUT("/:application_id/calculate", app.Calculate)
 		}
 		// Пользователи (авторизация)

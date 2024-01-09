@@ -669,6 +669,10 @@ const docTemplate = `{
                 "data_type_name",
                 "data_type_status",
                 "description",
+                "input_first",
+                "input_second",
+                "input_third",
+                "output",
                 "precision",
                 "unit"
             ],
@@ -692,13 +696,13 @@ const docTemplate = `{
                 "image_path": {
                     "type": "string"
                 },
-                "inputFirst": {
+                "input_first": {
                     "type": "number"
                 },
-                "inputSecond": {
+                "input_second": {
                     "type": "number"
                 },
-                "inputThird": {
+                "input_third": {
                     "type": "number"
                 },
                 "output": {

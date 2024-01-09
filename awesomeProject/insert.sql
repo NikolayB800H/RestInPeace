@@ -1,7 +1,7 @@
-TRUNCATE TABLE users CASCADE;
-TRUNCATE TABLE data_types CASCADE;
-TRUNCATE TABLE forecast_applications CASCADE;
-TRUNCATE TABLE connector_apps_types CASCADE;
+DROP TABLE users CASCADE;
+DROP TABLE data_types CASCADE;
+DROP TABLE forecast_applications CASCADE;
+DROP TABLE connector_apps_types CASCADE;
 
 INSERT INTO users(user_id, login, password, role)
 VALUES ('796c70e1-5f27-4433-a415-95e7272effa5' , 'moderator', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 2),

@@ -42,7 +42,7 @@ type ForecastApplicationsOutput struct {
 	ApplicationCreationDate   string  `json:"application_creation_date"`
 	ApplicationFormationDate  *string `json:"application_formation_date"`
 	ApplicationCompletionDate *string `json:"application_completion_date"`
-	InputStartDate            string  `json:"input_start_date"`
+	InputStartDate            *string `json:"input_start_date"`
 	Creator                   string  `json:"creator"`
 	Moderator                 *string `json:"moderator"`
 }
@@ -53,8 +53,12 @@ func ConvertForecastApplications(application *ds.ForecastApplications) ForecastA
 		ApplicationStatus:       application.ApplicationStatus,
 		CalculateStatus:         application.CalculateStatus,
 		ApplicationCreationDate: application.ApplicationCreationDate.Format("2006-01-02 15:04:05"),
-		InputStartDate:          application.InputStartDate.Format("2006-01-02"),
 		Creator:                 application.Creator.Login,
+	}
+
+	if application.InputStartDate != nil {
+		inputStartDate := application.InputStartDate.Format("2006-01-02")
+		output.InputStartDate = &inputStartDate
 	}
 
 	if application.ApplicationFormationDate != nil {

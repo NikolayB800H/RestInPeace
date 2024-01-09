@@ -53,8 +53,7 @@ type UpdateForecastApplicationRequest struct {
 }
 
 type DeleteFromForecastApplicationsRequest struct {
-	ApplicationId string `uri:"application_id" binding:"required,uuid"`
-	DataTypeId    string `uri:"data_type_id" binding:"required,uuid"`
+	DataTypeId string `uri:"data_type_id" binding:"required,uuid"`
 }
 
 type UserConfirmRequest struct {
