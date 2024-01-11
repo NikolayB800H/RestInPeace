@@ -11,3 +11,5 @@
 | №3 "Создание веб-сервиса в бэкенде нашей системы для использования его в SPA" | [api](https://github.com/NikolayB800H/RestInPeace/tree/api) |
 | №5 "Завершение бэкенда для SPA" | [jwt](https://github.com/NikolayB800H/RestInPeace/tree/jwt) |
 | №8 "Знакомство с межсервисным взаимодействием и асинхронностью" | [async-service](https://github.com/NikolayB800H/RestInPeace/tree/async-service) |
+---
+Горкунов Николай ИУ5-53Б | Удаленные вычисления: 7. Прогноз погоды
