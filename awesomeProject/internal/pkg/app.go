@@ -153,6 +153,8 @@ func ErrorHandler() gin.HandlerFunc {
 				c.JSON(-1, gin.H{"error": lastError.Error()})
 			case http.StatusMethodNotAllowed:
 				c.JSON(-1, gin.H{"error": lastError.Error()})
+			case http.StatusForbidden:
+				c.JSON(-1, gin.H{"error": lastError.Error()})
 			default:
 				c.Status(-1)
 			}

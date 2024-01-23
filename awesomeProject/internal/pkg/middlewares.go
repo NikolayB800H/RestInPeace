@@ -4,6 +4,7 @@ import (
 	"awesomeProject/internal/app/ds"
 	"awesomeProject/internal/app/role"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -34,20 +35,23 @@ func (app *Application) WithAuthCheck(assignedRoles ...role.Role) func(ctx *gin.
 		//log.Println(jwtStr)
 		err := app.redisClient.CheckJWTInBlacklist(c.Request.Context(), jwtStr)
 		if err == nil {
-			c.AbortWithStatus(http.StatusForbidden)
+			c.AbortWithError(http.StatusForbidden, fmt.Errorf("Галя отмена!")) // по этому токену разлогинивались, не пускаем хакера
+			log.Println("AAAAAAAAA")
 			return
 		}
 		if !errors.Is(err, redis.Nil) { // значит что это не ошибка отсуствия - внутренняя ошибка
 			c.AbortWithError(http.StatusInternalServerError, err)
+			log.Println("BBBBBBBBB")
 			return
 		}
 
 		claims := &ds.JWTClaims{}
 		token, err := jwt.ParseWithClaims(jwtStr, claims, func(token *jwt.Token) (interface{}, error) {
+			log.Println("CCCCCCCCCCc")
 			return []byte(app.config.JWT.Token), nil
 		})
 		if err != nil || !token.Valid {
-			c.AbortWithStatus(http.StatusForbidden)
+			c.AbortWithError(http.StatusForbidden, fmt.Errorf("Галя отмена!")) // токен устарел или глупый хакер ввел рандомные символы
 			return
 		}
 

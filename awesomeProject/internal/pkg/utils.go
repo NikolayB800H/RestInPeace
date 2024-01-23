@@ -27,13 +27,13 @@ func (app *Application) uploadImage(c *gin.Context, image *multipart.FileHeader,
 	defer src.Close()
 
 	extension := filepath.Ext(image.Filename)
-	if extension != ".jpg" && extension != ".jpeg" {
-		return nil, fmt.Errorf("разрешены только jpeg изображения")
+	if extension != ".png" {
+		return nil, fmt.Errorf("разрешены только png изображения")
 	}
 	imageName := UUID + extension
 
 	_, err = app.minioClient.PutObject(c, app.config.Minio.BucketName, imageName, src, image.Size, minio.PutObjectOptions{
-		ContentType: "image/jpeg",
+		ContentType: "image/png",
 	})
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (app *Application) uploadImage(c *gin.Context, image *multipart.FileHeader,
 }
 
 func (app *Application) deleteImage(c *gin.Context, UUID string) error {
-	imageName := UUID + ".jpg"
+	imageName := UUID + ".png"
 	//log.Println(imageName)
 	err := app.minioClient.RemoveObject(c, app.config.Minio.BucketName, imageName, minio.RemoveObjectOptions{})
 	if err != nil {

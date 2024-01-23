@@ -164,18 +164,19 @@ func (app *Application) Logout(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-
+	//log.Println("WWWWWWWWWW")
 	jwtStr = jwtStr[len(jwtPrefix):]
 
 	_, err := jwt.ParseWithClaims(jwtStr, &ds.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(app.config.JWT.Token), nil
 	})
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		//c.AbortWithError(http.StatusBadRequest, err)
 		log.Println(err)
+		c.Status(http.StatusOK)
 		return
 	}
-	//log.Println(result.Error)
+	//log.Println("AAAAAAAAAAAAAAAAAA")
 	//printContextInternals(c.Request.Context(), false)
 	log.Println(app)
 	err = app.redisClient.WriteJWTToBlacklist(c.Request.Context(), jwtStr, app.config.JWT.ExpiresIn)
@@ -183,6 +184,6 @@ func (app *Application) Logout(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-
+	log.Println("BBBBBBBBBBBBB")
 	c.Status(http.StatusOK)
 }
