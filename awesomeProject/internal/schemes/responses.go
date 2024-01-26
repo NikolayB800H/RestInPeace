@@ -45,9 +45,17 @@ type ForecastApplicationsOutput struct {
 	InputStartDate            *string `json:"input_start_date"`
 	Creator                   string  `json:"creator"`
 	Moderator                 *string `json:"moderator"`
+
+	Calculated *int64 `json:"calculated"`
+	Total      *int64 `json:"total"`
 }
 
-func ConvertForecastApplications(application *ds.ForecastApplications) ForecastApplicationsOutput {
+type Stats struct {
+	Calculated int64
+	Total      int64
+}
+
+func ConvertForecastApplications(application *ds.ForecastApplications, stats ...*Stats) ForecastApplicationsOutput {
 	output := ForecastApplicationsOutput{
 		ApplicationId:           application.ApplicationId,
 		ApplicationStatus:       application.ApplicationStatus,
@@ -73,6 +81,11 @@ func ConvertForecastApplications(application *ds.ForecastApplications) ForecastA
 
 	if application.Moderator != nil {
 		output.Moderator = &application.Moderator.Login
+	}
+
+	for _, stat := range stats {
+		output.Calculated = &stat.Calculated
+		output.Total = &stat.Total
 	}
 
 	return output

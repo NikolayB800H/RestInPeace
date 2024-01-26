@@ -88,7 +88,7 @@ func (app *Application) Run() {
 			f.PUT("/:application_id/moderator_confirm", app.WithAuthCheck(role.Moderator), app.ModeratorConfirm)                            // Завершить или отклонить модератором
 			f.DELETE("/delete_data_type/:data_type_id", app.WithAuthCheck(role.Client, role.Moderator), app.DeleteFromForecastApplications) // Изменение (удаление услуг)
 			f.PUT("/set_input/:data_type_id", app.WithAuthCheck(role.Client, role.Moderator), app.SetInput)                                 // Изменение входных данных
-			f.PUT("/:application_id/calculate", app.Calculate)
+			f.PUT("/:application_id/calculate", app.Calculate)                                                                              // Изменение ответа с проверкой секретного ключа
 		}
 		// Пользователи (авторизация)
 		u := api.Group("/user")

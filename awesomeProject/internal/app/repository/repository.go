@@ -235,3 +235,31 @@ func (r *Repository) GetUserById(user_id string) (*ds.Users, error) {
 	}
 	return user, nil
 }
+
+func (r *Repository) GetConnectorAppsTypesExtendedCounts(applicationId string) (int64, int64, error) {
+	var total int64
+
+	err := r.db.Table("connector_apps_types").
+		Select("*").
+		Joins("JOIN data_types ON connector_apps_types.data_type_id = data_types.data_type_id").
+		Where(ds.ConnectorAppsTypes{ApplicationId: applicationId}).
+		Count(&total).Error
+
+	if err != nil {
+		return 0, 0, err
+	}
+
+	var calculated int64
+
+	err = r.db.Table("connector_apps_types").
+		Select("*").
+		Joins("JOIN data_types ON connector_apps_types.data_type_id = data_types.data_type_id").
+		Where(ds.ConnectorAppsTypes{ApplicationId: applicationId}).
+		Where("output IS NOT NULL").
+		Count(&calculated).Error
+
+	if err != nil {
+		return 0, 0, err
+	}
+	return total, calculated, nil
+}

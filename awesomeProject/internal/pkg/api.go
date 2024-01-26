@@ -338,8 +338,17 @@ func (app *Application) GetAllForecastApplications(c *gin.Context) {
 	}
 
 	outputForecastApplications := make([]schemes.ForecastApplicationsOutput, len(applications))
+	//strLog := "Stats:\n"
 	for i, application := range applications {
-		outputForecastApplications[i] = schemes.ConvertForecastApplications(&application)
+		//a, b, d := app.repo.GetConnectorAppsTypesExtendedCounts(application.ApplicationId)
+		//strLog = strLog + application.ApplicationId + fmt.Sprint(": ", a, " ", b, " ", d, "\n")
+		total, calculated, err_ := app.repo.GetConnectorAppsTypesExtendedCounts(application.ApplicationId)
+		if err_ != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		stats := schemes.Stats{total, calculated}
+		outputForecastApplications[i] = schemes.ConvertForecastApplications(&application, &stats)
 	}
 	c.JSON(http.StatusOK, schemes.AllForecastApplicationssResponse{ForecastApplications: outputForecastApplications})
 }
@@ -683,7 +692,7 @@ func (app *Application) Calculate(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("перевозка не найдена"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявка не найдена"))
 		return
 	}
 	var calculateStatus string
