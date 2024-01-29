@@ -347,7 +347,7 @@ func (app *Application) GetAllForecastApplications(c *gin.Context) {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		stats := schemes.Stats{total, calculated}
+		stats := schemes.Stats{calculated, total}
 		outputForecastApplications[i] = schemes.ConvertForecastApplications(&application, &stats)
 	}
 	c.JSON(http.StatusOK, schemes.AllForecastApplicationssResponse{ForecastApplications: outputForecastApplications})
@@ -531,7 +531,8 @@ func (app *Application) UserConfirm(c *gin.Context) {
 	calculateStatus := ds.CalculateStarted
 	application.CalculateStatus = &calculateStatus
 	application.ApplicationStatus = ds.FORMED_APPLICATION
-	now := time.Now()
+	loc, _ := time.LoadLocation("Europe/Moscow")
+	now := time.Now().In(loc)
 	application.ApplicationFormationDate = &now
 
 	if err := app.repo.SaveForecastApplication(application); err != nil {
@@ -579,10 +580,11 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 		return
 	}
 	application.ApplicationStatus = request.Status
-	if request.Status == ds.COMPELTED_APPLICATION {
-		now := time.Now()
-		application.ApplicationCompletionDate = &now
-	}
+	//if request.Status == ds.COMPELTED_APPLICATION {
+	loc, _ := time.LoadLocation("Europe/Moscow")
+	now := time.Now().In(loc)
+	application.ApplicationCompletionDate = &now
+	//}
 	moderator, err := app.repo.GetUserById(userId)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
