@@ -36,7 +36,7 @@ const docTemplate = `{
                 "tags": [
                     "Виды данных"
                 ],
-                "summary": "Запросить все виды данных прогнозов и черновик заявки на прогноз",
+                "summary": "Запросить все виды данных прогнозов и черновик запроса на прогноз",
                 "parameters": [
                     {
                         "type": "string",
@@ -259,14 +259,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Добавляет данный вид данных в черновик заявки",
+                "description": "Добавляет данный вид данных в черновик запроса",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Виды данных"
                 ],
-                "summary": "Запросить добавление вида данных в заявку на прогноз",
+                "summary": "Запросить добавление вида данных в запрос на прогноз",
                 "parameters": [
                     {
                         "type": "string",
@@ -293,18 +293,18 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Возвращает все заявки с фильтрацией по статусу и дате формирования",
+                "description": "Возвращает все запросы с фильтрацией по статусу и дате формирования",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
-                "summary": "Запросить все заявки на прогнозы",
+                "summary": "Запросить все запросы на прогнозы",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "статус заявки",
+                        "description": "статус запроса",
                         "name": "application_status",
                         "in": "query"
                     },
@@ -336,11 +336,11 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Удаляет черновую заявку пользователя",
+                "description": "Удаляет черновой запрос пользователя",
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
-                "summary": "Удалить черновую заявку",
+                "summary": "Удалить черновой запрос",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -360,9 +360,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
-                "summary": "Запросить удаление вида данных из черновика заявки",
+                "summary": "Запросить удаление вида данных из черновика запроса",
                 "parameters": [
                     {
                         "type": "string",
@@ -394,7 +394,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
                 "summary": "Запросить изменение входных данных вида данных черновика",
                 "parameters": [
@@ -446,7 +446,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
                 "summary": "Запросить изменение черновика",
                 "parameters": [
@@ -474,14 +474,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Сформировать заявку пользователем",
+                "description": "Сформировать запрос пользователем",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
-                "summary": "Запросить формирование заявки",
+                "summary": "Запросить формирование запроса",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -499,18 +499,18 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Возвращает более подробную информацию о заявке",
+                "description": "Возвращает более подробную информацию о запросе",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
-                "summary": "Запросить одну заявку на прогноз",
+                "summary": "Запросить один запрос на прогноз",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "уникальный идентификатор заявки",
+                        "description": "уникальный идентификатор запроса",
                         "name": "application_id",
                         "in": "path",
                         "required": true
@@ -533,22 +533,22 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Подтвердить или отменить заявку модератором",
+                "description": "Подтвердить или отменить запрос модератором",
                 "tags": [
-                    "Заявки на прогнозы"
+                    "Запросы на прогнозы"
                 ],
-                "summary": "Подтвердить заявку",
+                "summary": "Подтвердить запрос",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "уникальный идентификатор заявки",
+                        "description": "уникальный идентификатор запроса",
                         "name": "application_id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "статус заявки",
+                        "description": "статус запроса",
                         "name": "status",
                         "in": "query"
                     }
@@ -795,6 +795,9 @@ const docTemplate = `{
                     "description": "Replace with Enum",
                     "type": "string"
                 },
+                "calculated": {
+                    "type": "integer"
+                },
                 "creator": {
                     "type": "string"
                 },
@@ -803,6 +806,9 @@ const docTemplate = `{
                 },
                 "moderator": {
                     "type": "string"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

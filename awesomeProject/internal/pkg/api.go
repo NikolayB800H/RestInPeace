@@ -13,7 +13,7 @@ import (
 )
 
 // GetAllDataTypes godoc
-// @Summary      Запросить все виды данных прогнозов и черновик заявки на прогноз
+// @Summary      Запросить все виды данных прогнозов и черновик запроса на прогноз
 // @Description  Список видов данных включает только те, что со статусом "доступен"
 // @Tags         Виды данных
 // @Param        data_type_name query string false "Название вида данных"
@@ -241,8 +241,8 @@ func (app *Application) ChangeDataType(c *gin.Context) {
 }
 
 // AddToForecastApplications godoc
-// @Summary      Запросить добавление вида данных в заявку на прогноз
-// @Description  Добавляет данный вид данных в черновик заявки
+// @Summary      Запросить добавление вида данных в запрос на прогноз
+// @Description  Добавляет данный вид данных в черновик запроса
 // @Tags         Виды данных
 // @Param        data_type_id path string true "уникальный идентификатор вида данных"
 // @Produce      json
@@ -272,7 +272,7 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 		return
 	}
 
-	// Получить черновую заявку
+	// Получить черновой запрос
 	var application *ds.ForecastApplications
 	userId := getUserId(c)
 	application, err = app.repo.GetDraftForecastApplication(userId)
@@ -288,13 +288,13 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 		}
 	}
 
-	// Создать связь меджду заявкой и типом данных
+	// Создать связь меджду запросом и видом данных
 	if err = app.repo.AddToConnectorAppsTypes(application.ApplicationId, request.URI.DataTypeId); err != nil { //!!!
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	// Вернуть список всех типов данных в заявке
+	// Вернуть список всех видов данных в запросе
 	var dataTypes []ds.DataTypes
 	dataTypes, err = app.repo.GetConnectorAppsTypes(application.ApplicationId)
 	if err != nil {
@@ -306,10 +306,10 @@ func (app *Application) AddToForecastApplications(c *gin.Context) {
 }
 
 // GetAllForecastApplications godoc
-// @Summary      Запросить все заявки на прогнозы
-// @Description  Возвращает все заявки с фильтрацией по статусу и дате формирования
-// @Tags         Заявки на прогнозы
-// @Param        application_status   query string false "статус заявки"
+// @Summary      Запросить все запросы на прогнозы
+// @Description  Возвращает все запросы с фильтрацией по статусу и дате формирования
+// @Tags         Запросы на прогнозы
+// @Param        application_status   query string false "статус запроса"
 // @Param        formation_date_start query string false "начальная дата формирования"
 // @Param        formation_date_end   query string false "конечная дата формирвания"
 // @Produce      json
@@ -354,10 +354,10 @@ func (app *Application) GetAllForecastApplications(c *gin.Context) {
 }
 
 // GetForecastApplication godoc
-// @Summary      Запросить одну заявку на прогноз
-// @Description  Возвращает более подробную информацию о заявке
-// @Tags         Заявки на прогнозы
-// @Param        application_id path string true "уникальный идентификатор заявки"
+// @Summary      Запросить один запрос на прогноз
+// @Description  Возвращает более подробную информацию о запросе
+// @Tags         Запросы на прогнозы
+// @Param        application_id path string true "уникальный идентификатор запроса"
 // @Produce      json
 // @Success      200 {object} schemes.ForecastApplicationsResponse
 // @Router       /api/forecast_applications/{application_id} [get]
@@ -382,7 +382,7 @@ func (app *Application) GetForecastApplication(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	dataTypes, err := app.repo.GetConnectorAppsTypesExtended(request.ApplicationId) //!!!
@@ -396,7 +396,7 @@ func (app *Application) GetForecastApplication(c *gin.Context) {
 // UpdateForecastApplication godoc
 // @Summary      Запросить изменение черновика
 // @Description  Изменяет дату начала входных измерений черновика и возвращает его
-// @Tags         Заявки на прогнозы
+// @Tags         Запросы на прогнозы
 // @Param        input_start_date query string false "дата начала входных измерений"
 // @Produce      json
 // @Success      200 {object} schemes.UpdateForecastApplicationsResponse
@@ -417,7 +417,7 @@ func (app *Application) UpdateForecastApplication(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	application.InputStartDate = &request.InputStartDate
@@ -430,9 +430,9 @@ func (app *Application) UpdateForecastApplication(c *gin.Context) {
 }
 
 // DeleteForecastApplication godoc
-// @Summary      Удалить черновую заявку
-// @Description  Удаляет черновую заявку пользователя
-// @Tags         Заявки на прогнозы
+// @Summary      Удалить черновой запрос
+// @Description  Удаляет черновой запрос пользователя
+// @Tags         Запросы на прогнозы
 // @Success      200
 // @Router       /api/forecast_applications [delete]
 // @Security     BearerAuth
@@ -446,7 +446,7 @@ func (app *Application) DeleteForecastApplication(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	application.ApplicationStatus = ds.DELETED_APPLICATION
@@ -459,9 +459,9 @@ func (app *Application) DeleteForecastApplication(c *gin.Context) {
 }
 
 // DeleteFromForecastApplications godoc
-// @Summary      Запросить удаление вида данных из черновика заявки
+// @Summary      Запросить удаление вида данных из черновика запроса
 // @Description  Удаляет один вид данных по его data_type_id
-// @Tags         Заявки на прогнозы
+// @Tags         Запросы на прогнозы
 // @Param        data_type_id path string true "уникальный идентификатор вида данных"
 // @Produce      json
 // @Success      200 {object} schemes.AllDataTypesResponse
@@ -482,11 +482,11 @@ func (app *Application) DeleteFromForecastApplications(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	if application.ApplicationStatus != ds.DRAFT_APPLICATION {
-		c.AbortWithError(http.StatusMethodNotAllowed, fmt.Errorf("нельзя редактировать заявление со статусом: %s", application.ApplicationStatus))
+		c.AbortWithError(http.StatusMethodNotAllowed, fmt.Errorf("нельзя редактировать запрос со статусом: %s", application.ApplicationStatus))
 		return
 	}
 
@@ -505,9 +505,9 @@ func (app *Application) DeleteFromForecastApplications(c *gin.Context) {
 }
 
 // UserConfirm godoc
-// @Summary      Запросить формирование заявки
-// @Description  Сформировать заявку пользователем
-// @Tags         Заявки на прогнозы
+// @Summary      Запросить формирование запроса
+// @Description  Сформировать запрос пользователем
+// @Tags         Запросы на прогнозы
 // @Produce      json
 // @Success      200 {object} schemes.UpdateForecastApplicationsResponse
 // @Router       /api/forecast_applications/user_confirm [put]
@@ -520,7 +520,7 @@ func (app *Application) UserConfirm(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	if err := app.calculateRequest(application.ApplicationId); err != nil {
@@ -543,11 +543,11 @@ func (app *Application) UserConfirm(c *gin.Context) {
 }
 
 // ModeratorConfirm godoc
-// @Summary      Подтвердить заявку
-// @Description  Подтвердить или отменить заявку модератором
-// @Tags         Заявки на прогнозы
-// @Param        application_id path  string true  "уникальный идентификатор заявки"
-// @Param        status         query string false "статус заявки"
+// @Summary      Подтвердить запрос
+// @Description  Подтвердить или отменить запрос модератором
+// @Tags         Запросы на прогнозы
+// @Param        application_id path  string true  "уникальный идентификатор запроса"
+// @Param        status         query string false "статус запроса"
 // @Success      200 {object} schemes.UpdateForecastApplicationsResponse
 // @Router       /api/forecast_applications/{application_id}/moderator_confirm [put]
 // @Security     BearerAuth
@@ -572,7 +572,7 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	if application.ApplicationStatus != ds.FORMED_APPLICATION {
@@ -603,7 +603,7 @@ func (app *Application) ModeratorConfirm(c *gin.Context) {
 // SetInput godoc
 // @Summary      Запросить изменение входных данных вида данных черновика
 // @Description  Изменяет входные данные в связи ММ
-// @Tags         Заявки на прогнозы
+// @Tags         Запросы на прогнозы
 // @Param        data_type_id path string true "уникальный идентификатор вида данных"
 // @Param        input_first  formData number true "Входное значение за первый день"
 // @Param        input_second formData number true "Входное значение за второй день"
@@ -630,7 +630,7 @@ func (app *Application) SetInput(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявление не найдено"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	if err := app.repo.SetInputConnectorAppsTypes(application.ApplicationId, request.URI.DataTypeId, request.InputFirst, request.InputSecond, request.InputThird); err != nil {
@@ -694,7 +694,7 @@ func (app *Application) Calculate(c *gin.Context) {
 		return
 	}
 	if application == nil {
-		c.AbortWithError(http.StatusNotFound, fmt.Errorf("заявка не найдена"))
+		c.AbortWithError(http.StatusNotFound, fmt.Errorf("запрос не найден"))
 		return
 	}
 	var calculateStatus string

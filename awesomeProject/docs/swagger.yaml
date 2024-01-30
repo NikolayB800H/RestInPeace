@@ -98,12 +98,16 @@ definitions:
       calculate_status:
         description: Replace with Enum
         type: string
+      calculated:
+        type: integer
       creator:
         type: string
       input_start_date:
         type: string
       moderator:
         type: string
+      total:
+        type: integer
     type: object
   schemes.ForecastApplicationsResponse:
     properties:
@@ -200,7 +204,7 @@ paths:
             $ref: '#/definitions/schemes.GetAllDataTypesResponse'
       security:
       - BearerAuth: []
-      summary: Запросить все виды данных прогнозов и черновик заявки на прогноз
+      summary: Запросить все виды данных прогнозов и черновик запроса на прогноз
       tags:
       - Виды данных
     post:
@@ -332,7 +336,7 @@ paths:
       - Виды данных
   /api/data_types/{data_type_id}/add_to_forecast_application:
     post:
-      description: Добавляет данный вид данных в черновик заявки
+      description: Добавляет данный вид данных в черновик запроса
       parameters:
       - description: уникальный идентификатор вида данных
         in: path
@@ -348,24 +352,24 @@ paths:
             $ref: '#/definitions/schemes.AllDataTypesResponse'
       security:
       - BearerAuth: []
-      summary: Запросить добавление вида данных в заявку на прогноз
+      summary: Запросить добавление вида данных в запрос на прогноз
       tags:
       - Виды данных
   /api/forecast_applications:
     delete:
-      description: Удаляет черновую заявку пользователя
+      description: Удаляет черновой запрос пользователя
       responses:
         "200":
           description: OK
       security:
       - BearerAuth: []
-      summary: Удалить черновую заявку
+      summary: Удалить черновой запрос
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
     get:
-      description: Возвращает все заявки с фильтрацией по статусу и дате формирования
+      description: Возвращает все запросы с фильтрацией по статусу и дате формирования
       parameters:
-      - description: статус заявки
+      - description: статус запроса
         in: query
         name: application_status
         type: string
@@ -386,14 +390,14 @@ paths:
             $ref: '#/definitions/schemes.AllForecastApplicationssResponse'
       security:
       - BearerAuth: []
-      summary: Запросить все заявки на прогнозы
+      summary: Запросить все запросы на прогнозы
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
   /api/forecast_applications/{application_id}:
     get:
-      description: Возвращает более подробную информацию о заявке
+      description: Возвращает более подробную информацию о запросе
       parameters:
-      - description: уникальный идентификатор заявки
+      - description: уникальный идентификатор запроса
         in: path
         name: application_id
         required: true
@@ -407,19 +411,19 @@ paths:
             $ref: '#/definitions/schemes.ForecastApplicationsResponse'
       security:
       - BearerAuth: []
-      summary: Запросить одну заявку на прогноз
+      summary: Запросить один запрос на прогноз
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
   /api/forecast_applications/{application_id}/moderator_confirm:
     put:
-      description: Подтвердить или отменить заявку модератором
+      description: Подтвердить или отменить запрос модератором
       parameters:
-      - description: уникальный идентификатор заявки
+      - description: уникальный идентификатор запроса
         in: path
         name: application_id
         required: true
         type: string
-      - description: статус заявки
+      - description: статус запроса
         in: query
         name: status
         type: string
@@ -430,9 +434,9 @@ paths:
             $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
       security:
       - BearerAuth: []
-      summary: Подтвердить заявку
+      summary: Подтвердить запрос
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
   /api/forecast_applications/delete_data_type/{data_type_id}:
     delete:
       description: Удаляет один вид данных по его data_type_id
@@ -451,9 +455,9 @@ paths:
             $ref: '#/definitions/schemes.AllDataTypesResponse'
       security:
       - BearerAuth: []
-      summary: Запросить удаление вида данных из черновика заявки
+      summary: Запросить удаление вида данных из черновика запроса
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
   /api/forecast_applications/set_input/{data_type_id}:
     put:
       description: Изменяет входные данные в связи ММ
@@ -487,7 +491,7 @@ paths:
       - BearerAuth: []
       summary: Запросить изменение входных данных вида данных черновика
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
   /api/forecast_applications/update:
     put:
       description: Изменяет дату начала входных измерений черновика и возвращает его
@@ -507,10 +511,10 @@ paths:
       - BearerAuth: []
       summary: Запросить изменение черновика
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
   /api/forecast_applications/user_confirm:
     put:
-      description: Сформировать заявку пользователем
+      description: Сформировать запрос пользователем
       produces:
       - application/json
       responses:
@@ -520,9 +524,9 @@ paths:
             $ref: '#/definitions/schemes.UpdateForecastApplicationsResponse'
       security:
       - BearerAuth: []
-      summary: Запросить формирование заявки
+      summary: Запросить формирование запроса
       tags:
-      - Заявки на прогнозы
+      - Запросы на прогнозы
   /api/user/login:
     post:
       consumes:

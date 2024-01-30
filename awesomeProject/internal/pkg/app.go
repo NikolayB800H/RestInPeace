@@ -77,7 +77,7 @@ func (app *Application) Run() {
 			d.POST("", app.WithAuthCheck(role.Moderator), app.AddDataType)                                                                      // Добавление
 			d.POST("/:data_type_id/add_to_forecast_application", app.WithAuthCheck(role.Client, role.Moderator), app.AddToForecastApplications) // Добавление в заявление // Связь (связь заявок на предсказания и видов данных)
 		}
-		// Заявления (заявки на предсказания)
+		// Заявления (запросы на предсказания)
 		f := api.Group("/forecast_applications")
 		{
 			f.GET("", app.WithAuthCheck(role.Client, role.Moderator), app.GetAllForecastApplications)                                       // Список (отфильтровать по дате формирования и статусу)
