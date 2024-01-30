@@ -60,6 +60,7 @@ func (r *Repository) GetDataTypeByName(dataTypeName string) ([]ds.DataTypes, err
 		//Where("LOWER(data_types.data_type_name) LIKE ? AND data_types.data_type_status = 'valid'", "%"+strings.ToLower(dataTypeName)+"%").
 		Where("LOWER(data_type_name) LIKE ?", "%"+strings.ToLower(dataTypeName)+"%").
 		Where("data_type_status = ?", ds.OK_TYPE).
+		Order("data_type_id").
 		Find(&dataTypes).Error
 
 	if err != nil {
@@ -92,7 +93,8 @@ func (r *Repository) GetAllForecastApplications(creatorId *string, formationDate
 		Preload("Creator").
 		Preload("Moderator").
 		Where("LOWER(application_status) LIKE ?", "%"+strings.ToLower(status)+"%").
-		Where("application_status != ? AND application_status != ?", ds.DELETED_APPLICATION, ds.DRAFT_APPLICATION)
+		Where("application_status != ? AND application_status != ?", ds.DELETED_APPLICATION, ds.DRAFT_APPLICATION).
+		Order("application_creation_date")
 	if creatorId != nil {
 		query = query.Where("creator_id = ?", *creatorId)
 	}
@@ -170,6 +172,7 @@ func (r *Repository) GetConnectorAppsTypesExtended(applicationId string) ([]ds.C
 		Select("*").
 		Joins("JOIN data_types ON connector_apps_types.data_type_id = data_types.data_type_id").
 		Where(ds.ConnectorAppsTypes{ApplicationId: applicationId}).
+		Order("data_types.data_type_id").
 		Scan(&dataTypes).Error
 
 	if err != nil {
